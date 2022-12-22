@@ -37,7 +37,6 @@ function RegisterScreen({ navigation }) {
     setPassword("");
     setName("");
   };
-
   return (
     <View style={styles.container}>
       <TouchableWithoutFeedback onPress={onCloseKeyboard}>
@@ -112,7 +111,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   formTitleText: {
-    // fontWeight: 500,
+    fontFamily: "Roboto-500",
     fontSize: 30,
     lineHeight: 35,
     textAlign: "center",
@@ -149,9 +148,6 @@ const styles = StyleSheet.create({
     // fontSize: 16,
     // lineHeight: 19,
   },
-  inputTitle: {
-    marginBottom: 8,
-  },
   button: {
     // display: 1,
     paddingTop: 16,
@@ -161,7 +157,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
   },
   buttonText: {
-    // fontWeight: 400,
+    fontFamily: "Roboto-400",
     fontSize: 16,
     lineHeight: 19,
     textAlign: "center",
@@ -172,9 +168,10 @@ const styles = StyleSheet.create({
     margin: "auto",
   },
   linckText: {
-    // fontWeight: 400,
+    fontFamily: "Roboto-400",
     fontSize: 16,
     lineHeight: 19,
     color: "#1B4371",
+    textAlign: 'center',
   },
 });

@@ -3,11 +3,35 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 const AuthStack = createNativeStackNavigator();
 
-import { StyleSheet, Text } from "react-native";
+import { useCallback, useState } from "react";
+import { useFonts } from "expo-font";
+
+import * as SplashScreen from "expo-splash-screen";
+
+SplashScreen.preventAutoHideAsync();
+
 import LoginScreen from "./screens/auth/LoginScreen";
 import RegisterScreen from "./screens/auth/RegisterScreen";
+import { Text } from "react-native";
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    "Roboto-700": require("./assets/fonts/Roboto-Bold.ttf"),
+    "Roboto-500": require("./assets/fonts/Roboto-Medium.ttf"),
+    "Roboto-400": require("./assets/fonts/Roboto-Regular.ttf"),
+  });
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return <Text>Loaded</Text>;
+  }
+  onLayoutRootView();
+
   return (
     <NavigationContainer>
       <AuthStack.Navigator>
@@ -17,13 +41,11 @@ export default function App() {
           options={{ headerShown: false }}
         />
         <AuthStack.Screen
-           name="Login"
-           component={LoginScreen}
-           options={{ headerShown: false }}
-       />
+          name="Login"
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
       </AuthStack.Navigator>
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({});

@@ -103,6 +103,7 @@ const styles = StyleSheet.create({
   },
   formTitleText: {
     // fontWeight: 500,
+    // fontFamily: "Roboto-500",
     fontSize: 30,
     lineHeight: 35,
     textAlign: "center",
