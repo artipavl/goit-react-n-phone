@@ -13,8 +13,10 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Dimensions,
+  TouchableOpacity,
+  TouchableHighlight,
 } from "react-native";
-import image from "../../assets/Images/zvezdy.jpg";
+import image from "../../assets/Images/PhotoBG.jpg";
 
 function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -43,42 +45,52 @@ function RegisterScreen({ navigation }) {
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
           >
-            <View style={styles.headerTitle}>
-              <Text style={styles.headerTitleText}>Register</Text>
-            </View>
             <SafeAreaView style={styles.form}>
+              <View style={styles.formTitle}>
+                <Text style={styles.formTitleText}>Регистрация</Text>
+              </View>
               <View>
-                <Text style={styles.inputTitle}>Name</Text>
                 <TextInput
                   style={styles.input}
                   value={name}
                   onChangeText={setName}
+                  placeholder="Логин"
+                  autoComplete="name"
                 />
               </View>
-              <View>
-                <Text style={styles.inputTitle}>Email</Text>
+              <View style={{ marginTop: 16 }}>
                 <TextInput
                   style={styles.input}
                   value={email}
                   onChangeText={setEmail}
+                  placeholder="Адрес электронной почты"
+                  autoComplete="email"
                 />
               </View>
-              <View style={{ marginTop: 16 }}>
-                <Text style={styles.inputTitle}>Password</Text>
+              <View style={{ marginTop: 16, marginBottom: 43 }}>
                 <TextInput
                   style={styles.input}
                   secureTextEntry
                   value={password}
                   onChangeText={setPassword}
+                  placeholder="Пароль"
+                  autoComplete="password"
                 />
               </View>
-              <View style={styles.button}>
-                <Button title="Register" onPress={onSubmit} />
-              </View>
-              <Button
-                title="go to login"
+              <TouchableOpacity
+                style={styles.button}
+                onPress={onSubmit}
+                activeOpacity="0.8"
+              >
+                <Text style={styles.buttonText}>Зарегистрироваться</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.linck}
                 onPress={() => navigation.navigate("Login")}
-              />
+                activeOpacity="0.8"
+              >
+                <Text style={styles.linckText}>Уже есть аккаунт? Войти</Text>
+              </TouchableOpacity>
             </SafeAreaView>
           </KeyboardAvoidingView>
         </ImageBackground>
@@ -96,32 +108,75 @@ const styles = StyleSheet.create({
   },
   image: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: "flex-end",
   },
-
-  headerTitle: {
-    marginBottom: 50,
-    alignItems: "center",
-  },
-  headerTitleText: {
-    fontSize: 60,
-    color: "#f0f8ff",
+  formTitleText: {
+    // fontWeight: 500,
+    fontSize: 30,
+    lineHeight: 35,
+    textAlign: "center",
+    letterSpacing: 0.01,
+    color: "#212121",
   },
   form: {
+    display: 1,
+    // alignItems: "center",
+    borderTopRightRadius: 25,
+    borderTopLeftRadius: 25,
+    paddingTop: 92,
+    paddingLeft: 16,
+    paddingRight: 16,
+    paddingBottom: 79,
+
+    backgroundColor: "#ffffff",
+  },
+  formTitle: {
+    marginBottom: 32,
     alignItems: "center",
   },
   input: {
-    width: 300,
-    backgroundColor: "#f0f8ff",
-    paddingHorizontal: 16,
+    display: 1,
+    height: 50,
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderRadius: 8,
+    borderColor: "#E8E8E8",
+    paddingTop: 16,
+    paddingBottom: 15,
+    paddingLeft: 16,
+    paddingRight: 16,
+    backgroundColor: "#F6F6F6",
+    color: "#BDBDBD",
+    // fontWeight: 400,
+    // fontSize: 16,
+    // lineHeight: 19,
   },
   inputTitle: {
     marginBottom: 8,
-    color: "#f0f8ff",
   },
   button: {
-    marginTop: 16,
-    width: 200,
+    display: 1,
+    paddingTop: 16,
+    paddingBottom: 16,
+    marginBottom: 32,
+    backgroundColor: "#FF6C00",
+    borderRadius: 100,
+  },
+  buttonText: {
+    // fontWeight: 400,
+    fontSize: 16,
+    lineHeight: 19,
+    textAlign: "center",
+    color: "#FFFFFF",
+  },
+  linck: {
+    display: 1,
+    margin: "auto",
+  },
+  linckText: {
+    // fontWeight: 400,
+    fontSize: 16,
+    lineHeight: 19,
+    color: "#1B4371",
   },
 });
