@@ -45,6 +45,7 @@ function RegisterScreen({ navigation }) {
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
           >
+            {/* style={styles.form} */}
             <SafeAreaView style={styles.form}>
               <View style={styles.formTitle}>
                 <Text style={styles.formTitleText}>Регистрация</Text>
@@ -119,8 +120,6 @@ const styles = StyleSheet.create({
     color: "#212121",
   },
   form: {
-    display: 1,
-    // alignItems: "center",
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
     paddingTop: 92,
@@ -135,7 +134,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   input: {
-    display: 1,
     height: 50,
     borderWidth: 1,
     borderStyle: "solid",
@@ -146,7 +144,7 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     paddingRight: 16,
     backgroundColor: "#F6F6F6",
-    color: "#BDBDBD",
+    // color: "#BDBDBD",
     // fontWeight: 400,
     // fontSize: 16,
     // lineHeight: 19,
@@ -155,7 +153,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   button: {
-    display: 1,
+    // display: 1,
     paddingTop: 16,
     paddingBottom: 16,
     marginBottom: 32,
@@ -170,7 +168,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
   linck: {
-    display: 1,
+    // display: 1,
     margin: "auto",
   },
   linckText: {
