@@ -20,6 +20,7 @@ export default function App() {
     "Roboto-500": require("./assets/fonts/Roboto-Medium.ttf"),
     "Roboto-400": require("./assets/fonts/Roboto-Regular.ttf"),
   });
+  const [isLogin, setIsLogin] = useState(false);
 
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {

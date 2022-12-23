@@ -37,8 +37,8 @@ function LoginScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <TouchableWithoutFeedback onPress={onCloseKeyboard}>
-        <ImageBackground source={image} resizeMode="cover" style={styles.image}>
+      <ImageBackground source={image} resizeMode="cover" style={styles.image}>
+        <TouchableWithoutFeedback onPress={onCloseKeyboard}>
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
           >
@@ -46,26 +46,30 @@ function LoginScreen({ navigation }) {
               <View style={styles.formTitle}>
                 <Text style={styles.formTitleText}>Войти</Text>
               </View>
-
               <View>
-                <TextInput
-                  style={styles.input}
-                  value={email}
-                  onChangeText={setEmail}
-                  placeholder="Адрес электронной почты"
-                  autoComplete="email"
-                />
+                <View>
+                  <TextInput
+                    style={styles.input}
+                    value={email}
+                    onChangeText={setEmail}
+                    autoComplete="email"
+                    placeholder="Адрес электронной почты"
+                    placeholderTextColor="#BDBDBD"
+                  />
+                </View>
+                <View style={{ marginTop: 16, marginBottom: 43 }}>
+                  <TextInput
+                    style={styles.input}
+                    secureTextEntry
+                    value={password}
+                    onChangeText={setPassword}
+                    autoComplete="password"
+                    placeholder="Пароль"
+                    placeholderTextColor="#BDBDBD"
+                  />
+                </View>
               </View>
-              <View style={{ marginTop: 16, marginBottom: 43 }}>
-                <TextInput
-                  style={styles.input}
-                  secureTextEntry
-                  value={password}
-                  onChangeText={setPassword}
-                  placeholder="Пароль"
-                  autoComplete="password"
-                />
-              </View>
+
               <TouchableOpacity
                 style={styles.button}
                 onPress={onSubmit}
@@ -84,8 +88,8 @@ function LoginScreen({ navigation }) {
               </TouchableOpacity>
             </SafeAreaView>
           </KeyboardAvoidingView>
-        </ImageBackground>
-      </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback>
+      </ImageBackground>
       <StatusBar style="auto" />
     </View>
   );
@@ -99,11 +103,11 @@ const styles = StyleSheet.create({
   },
   image: {
     flex: 1,
+    resizeMode: "cover",
     justifyContent: "flex-end",
   },
   formTitleText: {
-    // fontWeight: 500,
-    // fontFamily: "Roboto-500",
+    fontFamily: "Roboto-500",
     fontSize: 30,
     lineHeight: 35,
     textAlign: "center",
@@ -116,7 +120,7 @@ const styles = StyleSheet.create({
     paddingTop: 92,
     paddingLeft: 16,
     paddingRight: 16,
-    paddingBottom: 145,
+    paddingBottom: 79,
 
     backgroundColor: "#ffffff",
   },
@@ -135,13 +139,10 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     paddingRight: 16,
     backgroundColor: "#F6F6F6",
-    // color: "#BDBDBD",
-    // fontWeight: 400,
-    // fontSize: 16,
-    // lineHeight: 19,
-  },
-  inputTitle: {
-    marginBottom: 8,
+    fontFamily: "Roboto-400",
+    color: "#212121",
+    fontSize: 16,
+    lineHeight: 19,
   },
   button: {
     // display: 1,
@@ -152,7 +153,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
   },
   buttonText: {
-    // fontWeight: 400,
+    fontFamily: "Roboto-400",
     fontSize: 16,
     lineHeight: 19,
     textAlign: "center",
@@ -163,9 +164,10 @@ const styles = StyleSheet.create({
     margin: "auto",
   },
   linckText: {
-    // fontWeight: 400,
+    fontFamily: "Roboto-400",
     fontSize: 16,
     lineHeight: 19,
     color: "#1B4371",
+    textAlign: "center",
   },
 });
