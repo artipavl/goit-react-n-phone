@@ -1,12 +1,11 @@
-import React from 'react';
-import { Text, View } from 'react-native';
+import React from "react";
+import { Button, Text, View } from "react-native";
 
-const PostsScreen = ({
-    params,
-}) => (
-    <View>
-        <Text>PostsScreen</Text>
-    </View>
+const PostsScreen = ({ navigation }) => (
+  <View>
+    <Text>PostsScreen</Text>
+    <Button onPress={() => navigation.navigate("Карта")} title='cart'/>
+  </View>
 );
 
 export default PostsScreen;
