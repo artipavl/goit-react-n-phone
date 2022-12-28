@@ -1,8 +1,7 @@
 import React from "react";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { Feather} from "@expo/vector-icons";
-
+import { Feather } from "@expo/vector-icons";
 
 const HomeStack = createStackNavigator();
 
@@ -10,8 +9,11 @@ import { Text, View } from "react-native";
 import PostsScreen from "./PostsScreen";
 import MapScreen from "./MapScreen";
 import CommentsScreen from "./CommentsScreen";
+import { useDispatch } from "react-redux";
+import { authStateSignOut } from "../../redux/auth/authOptions";
 
 const Home = ({ navigation }) => {
+  const dispatch = useDispatch();
   return (
     <HomeStack.Navigator>
       <HomeStack.Screen
@@ -28,7 +30,7 @@ const Home = ({ navigation }) => {
               name="log-out"
               size={24}
               color="black"
-              // onPress={}
+              onPress={() => dispatch(authStateSignOut())}
             />
           ),
         }}

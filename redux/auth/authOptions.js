@@ -8,6 +8,7 @@ import {
   updateProfile,
   onAuthStateChanged,
   getRedirectResult,
+  signOut,
 } from "firebase/auth";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
@@ -65,12 +66,10 @@ export const authStateSignOut = createAsyncThunk(
   async (prop, thunkAPI) => {
     try {
       const auth = getAuth();
-      const test = signOut(auth);
-      console.log(test);
+      await signOut(auth);
     } catch (error) {
       console.log(error);
       return thunkAPI.rejectWithValue(error.message);
     }
   }
 );
-

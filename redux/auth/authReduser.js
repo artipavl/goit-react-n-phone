@@ -3,6 +3,7 @@ import {
   authSignInUser,
   authSignUpUser,
   authStateChangeUser,
+  authStateSignOut,
 } from "./authOptions";
 
 const initialState = {
@@ -50,6 +51,10 @@ export const authSlice = createSlice({
       state.error = action.payload;
       state.isLoggedIn = false;
     });
+
+    builder.addCase(authStateSignOut.fulfilled, (state, action) => ({
+      ...initialState,
+    }));
   },
   //   extraReducers: {
   //     [authSignInUser.fulfilled](state, action) {
