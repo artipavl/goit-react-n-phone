@@ -1,13 +1,88 @@
 import { createSlice } from "@reduxjs/toolkit";
+import {
+  authSignInUser,
+  authSignUpUser,
+  authStateChangeUser,
+} from "./authOptions";
 
 const initialState = {
-  userId: null,
+  uid: null,
   userName: null,
   email: null,
+  isLoggedIn: false,
+  isRefreshing: false,
+  error: null,
 };
 
 export const authSlice = createSlice({
   name: "auth",
   initialState,
-  reduser: {},
+  extraReducers: (builder) => {
+    builder.addCase(authSignInUser.fulfilled, (state, action) => {
+      state.email = action.payload.email;
+      state.userName = action.payload.name;
+      state.uid = action.payload.uid;
+      state.isLoggedIn = true;
+    });
+    builder.addCase(authSignInUser.rejected, (state, action) => {
+      state.error = action.payload;
+      state.isLoggedIn = false;
+    });
+
+    builder.addCase(authSignUpUser.fulfilled, (state, action) => {
+      state.email = action.payload.email;
+      state.userName = action.payload.name;
+      state.uid = action.payload.uid;
+      state.isLoggedIn = true;
+    });
+    builder.addCase(authSignUpUser.rejected, (state, action) => {
+      state.error = action.payload;
+      state.isLoggedIn = false;
+    });
+
+    builder.addCase(authStateChangeUser.fulfilled, (state, action) => {
+      state.email = action.payload.email;
+      state.userName = action.payload.name;
+      state.uid = action.payload.uid;
+      state.isLoggedIn = true;
+    });
+    builder.addCase(authStateChangeUser.rejected, (state, action) => {
+      state.error = action.payload;
+      state.isLoggedIn = false;
+    });
+  },
+  //   extraReducers: {
+  //     [authSignInUser.fulfilled](state, action) {
+  //       state.email = action.payload.email;
+  //       state.userName = action.payload.name;
+  //       state.uid = action.payload.uid;
+  //       state.isLoggedIn = true;
+  //     },
+  //     [authSignInUser.rejected](state, action) {
+  //       state.error = action.payload;
+  //       state.isLoggedIn = false;
+  //     },
+
+  //     [authSignUpUser.fulfilled](state, action) {
+  //       state.email = action.payload.email;
+  //       state.userName = action.payload.name;
+  //       state.uid = action.payload.uid;
+  //       state.isLoggedIn = true;
+  //     },
+  //     [authSignUpUser.rejected](state, action) {
+  //       state.error = action.payload;
+  //       state.isLoggedIn = false;
+  //     },
+
+  //     [authStateChangeUser.fulfilled](state, action) {
+  //       state.email = action.payload.email;
+  //       state.userName = action.payload.name;
+  //       state.uid = action.payload.uid;
+  //       state.isLoggedIn = true;
+  //     },
+  //     [authStateChangeUser.rejected](state, action) {
+  //       state.error = action.payload;
+  //       state.isLoggedIn = false;
+  //     },
+  //   },
 });

@@ -4,7 +4,7 @@ import { Button, Text, View } from "react-native";
 const PostsScreen = ({ navigation }) => (
   <View>
     <Text>PostsScreen</Text>
-    <Button onPress={() => navigation.navigate("Карта")} title='cart'/>
+    <Button onPress={() => navigation.navigate("Карта")} title="cart" />
   </View>
 );
 

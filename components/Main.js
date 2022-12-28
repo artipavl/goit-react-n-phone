@@ -17,14 +17,36 @@ import RegisterScreen from "../screens/auth/RegisterScreen";
 import ProfileScreen from "../screens/main/ProfileScreen";
 import CreatePostsScreen from "../screens/main/CreatePostsScreen";
 import Home from "../screens/main/Home";
-import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { authStateChangeUser } from "../redux/auth/authOptions";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 export default function Main() {
-  const [isLogin, setIsLogin] = useState(true);
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // dispatch(authStateChangeUser());
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        dispatch(
+          authStateChangeUser({
+            email: user.email,
+            name: user.phoneNumber,
+            uid: user.uid,
+          })
+        );
+        // return { email: user.email, name: user.phoneNumber, uid: user.uid };
+      }
+    });
+  }, []);
 
   return (
     <NavigationContainer>
-      {isLogin ? (
+      {isLoggedIn ? (
         <MainTab.Navigator>
           <MainTab.Screen
             name="Главная"

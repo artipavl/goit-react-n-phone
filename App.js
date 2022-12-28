@@ -1,6 +1,4 @@
 import * as React from "react";
-import { Feather, AntDesign, Octicons } from "@expo/vector-icons";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -8,19 +6,15 @@ import { createStackNavigator } from "@react-navigation/stack";
 const AuthStack = createStackNavigator();
 const MainTab = createBottomTabNavigator();
 
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { useFonts } from "expo-font";
 
 import * as SplashScreen from "expo-splash-screen";
 
 SplashScreen.preventAutoHideAsync();
 
-import LoginScreen from "./screens/auth/LoginScreen";
-import RegisterScreen from "./screens/auth/RegisterScreen";
-import { Button, StyleSheet, Text, View } from "react-native";
-import ProfileScreen from "./screens/main/ProfileScreen";
-import CreatePostsScreen from "./screens/main/CreatePostsScreen";
-import Home from "./screens/main/Home";
+import { Text } from "react-native";
+
 import { Provider } from "react-redux";
 import Main from "./components/Main";
 import { store } from "./redux/store";
@@ -31,7 +25,6 @@ export default function App() {
     "Roboto-500": require("./assets/fonts/Roboto-Medium.ttf"),
     "Roboto-400": require("./assets/fonts/Roboto-Regular.ttf"),
   });
-  const [isLogin, setIsLogin] = useState(true);
 
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
@@ -45,7 +38,9 @@ export default function App() {
   onLayoutRootView();
 
   return (
-   <Provider store = {store}><Main /></Provider>
+    <Provider store={store}>
+      <Main />
+    </Provider>
   );
 }
 

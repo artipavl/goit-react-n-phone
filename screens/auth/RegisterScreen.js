@@ -16,12 +16,15 @@ import {
   TouchableOpacity,
   TouchableHighlight,
 } from "react-native";
+import { useDispatch } from "react-redux";
 import image from "../../assets/Images/PhotoBG.jpg";
+import { authSignUpUser } from "../../redux/auth/authOptions";
 
 function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const dispatch = useDispatch();
 
   const onCloseKeyboard = () => {
     Keyboard.dismiss();
@@ -31,7 +34,7 @@ function RegisterScreen({ navigation }) {
     console.log(email);
     console.log(password);
     console.log(name);
-
+    dispatch(authSignUpUser({ name, password, email }));
     Keyboard.dismiss();
     setEmail("");
     setPassword("");
