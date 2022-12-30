@@ -15,43 +15,44 @@ import {
 const PostsScreen = ({ navigation }) => {
   const [data, setData] = useState([]);
 
+  useEffect(() => {
+    getPosts();
+  }, []);
+
   const getPosts = async () => {
     try {
       const db = getFirestore();
-      // const docRef = await doc(collection(db, "posts"));
-      // const docSnap = await getDoc(collection(db, "posts"));
-      // const q = query(collection(db, "posts"));
-      // await onSnapshot(q, (doc) => {
-      //   console.log("Current data: ", doc);
-      // });
-      // console.log(docSnap);
-      // const docRef = await collection(db, "posts");
-      // const doc = await getDocsFromCache(docRef);
-      // console.log(doc.data());
-
-      // const querySnapshot = await getDocs(collection(db, "posts"));
-      // querySnapshot.forEach((doc) => {
-      //   // doc.data() is never undefined for query doc snapshots
-      //   console.log(doc.id, " => ", doc.data());
-      // });
-
-      const unsubscribe = await onSnapshot(
-        collection(db, "posts"),
-        (snapshot) => {
-          const data = snapshot.docChanges().map((change) => {
-            return { id: change.doc.id, ...change.doc.data() };
-          });
-          console.log("data", data);
-          setData(data);
-        }
-      );
+      await onSnapshot(collection(db, "posts"), (snapshot) => {
+        snapshot.docChanges().map((change) => {
+          console.log(change.type);
+          const post = {
+            id: change.doc.id,
+            ...change.doc.data(),
+          };
+          if (change.type === "added" && indexOfId(post.id) < 0) {
+            setData((data) => [post, ...data]);
+          }
+          if (change.type === "modified") {
+            console.log("Modified city: ", change.doc.data());
+          }
+          if (change.type === "removed") {
+            console.log("Removed city: ", change.doc.data());
+          }
+        });
+      });
     } catch (error) {
       console.log(error);
     }
   };
-  useEffect(() => {
-    getPosts();
-  }, []);
+
+  const indexOfId = (id) => {
+    for (let index = 0; index < data.length; index++) {
+      if (data[index].id == id) {
+        return index;
+      }
+    }
+    return -1;
+  };
 
   return (
     <View>
@@ -69,6 +70,16 @@ const PostsScreen = ({ navigation }) => {
               style={{ width: 400, height: 400 }}
             />
             <Text style={{ color: "red" }}>{item.name}</Text>
+            <Button
+              onPress={() =>
+                navigation.navigate("Карта", { location: item.location })
+              }
+              title="cart"
+            />
+            <Button
+              onPress={() => navigation.navigate("Коментарии", { item })}
+              title="coment"
+            />
           </View>
         )}
       />
