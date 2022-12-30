@@ -14,11 +14,11 @@ import { FontAwesome, Feather } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import { app, storage } from "../../firebase/config";
 // import { getDatabase, ref, set } from "firebase/database";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useSelector } from "react-redux";
 import { collection, addDoc, getFirestore } from "firebase/firestore";
 
-const CreatePostsScreen = ({ navigation }) => {
+const CreatePostsScreen = ({}) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [type, setType] = useState(() => Camera.Constants.Type.back);
@@ -57,7 +57,7 @@ const CreatePostsScreen = ({ navigation }) => {
   if (hasPermission === null) {
     return <View />;
   }
-  
+
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;
   }
