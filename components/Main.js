@@ -21,6 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { authStateChangeUser } from "../redux/auth/authOptions";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase/config";
 
 export default function Main() {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
@@ -29,7 +30,7 @@ export default function Main() {
 
   useEffect(() => {
     // dispatch(authStateChangeUser());
-    const auth = getAuth();
+    // const auth = getAuth();
     onAuthStateChanged(auth, (user) => {
       if (user) {
         dispatch(
