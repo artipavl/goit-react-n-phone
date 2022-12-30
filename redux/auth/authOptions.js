@@ -1,6 +1,7 @@
 import app from "../../firebase/config";
 // console.log(app);
-// import db from "../../firebase/config";
+import { auth } from "../../firebase/config";
+
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -54,6 +55,18 @@ export const authStateChangeUser = createAsyncThunk(
   "auth/Change",
   async (prop, thunkAPI) => {
     try {
+      // console.log(prop);
+      // console.log(auth.currentUser);
+      // const user = auth.currentUser;
+      // console.log(user);
+      console.log(prop);
+      // if (user) {
+      //   return {
+      //     email: user.email,
+      //     name: user.phoneNumber,
+      //     uid: user.uid,
+      //   };
+      // }
       return { ...prop };
     } catch (error) {
       console.log(error);
@@ -61,6 +74,7 @@ export const authStateChangeUser = createAsyncThunk(
     }
   }
 );
+
 export const authStateSignOut = createAsyncThunk(
   "auth/SignOut",
   async (prop, thunkAPI) => {
