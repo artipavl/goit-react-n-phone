@@ -11,6 +11,12 @@ import {
   SafeAreaView,
 } from "react-native";
 import { FontAwesome, Feather } from "@expo/vector-icons";
+import * as Location from "expo-location";
+import { app, storage } from "../../firebase/config";
+// import { getDatabase, ref, set } from "firebase/database";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { useSelector } from "react-redux";
+import { collection, addDoc, getFirestore } from "firebase/firestore";
 
 const CreatePostsScreen = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState(null);
@@ -18,7 +24,9 @@ const CreatePostsScreen = ({ navigation }) => {
   const [type, setType] = useState(() => Camera.Constants.Type.back);
   const [photo, setPhoto] = useState("");
   const [name, setName] = useState("");
-  const [location, setLocation] = useState("");
+  const [locationUser, setLocationUser] = useState("");
+  const [location, setLocation] = useState(null);
+  const { uid, userName } = useSelector((state) => state.auth);
 
   useEffect(() => {
     (async () => {
@@ -29,16 +37,67 @@ const CreatePostsScreen = ({ navigation }) => {
     })();
   }, []);
 
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission to access location was denied");
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+
+      const coords = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
+      setLocation(coords);
+    })();
+  }, []);
+
   if (hasPermission === null) {
     return <View />;
   }
+  
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;
   }
 
-  const onSubmit = () => {
-    console.log(photo, name, location);
+  const onSubmit = async () => {
+    try {
+      console.log(photo, name, locationUser, location);
+      const response = await fetch(photo);
+      const file = await response.blob();
+      const postId = Date.now().toString();
+
+      const storageRef = await ref(storage, `images/${postId}`);
+      await uploadBytes(storageRef, file);
+      const photoUrl = await getDownloadURL(storageRef);
+      console.log("test ", photoUrl);
+      await addPostData({
+        uid,
+        userName,
+        photo: photoUrl,
+        name,
+        locationUser,
+        location,
+      });
+      console.log("done");
+      // console.log(storageRef);
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  const addPostData = async (post) => {
+    try {
+      const db = getFirestore();
+      const docRef = await addDoc(collection(db, "posts"), post);
+      console.log("Document written with ID: ", docRef.id);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.cameraContainer}>
@@ -116,8 +175,8 @@ const CreatePostsScreen = ({ navigation }) => {
                 ...styles.input,
                 paddingLeft: 28,
               }}
-              value={location}
-              onChangeText={setLocation}
+              value={locationUser}
+              onChangeText={setLocationUser}
               //   autoComplete=""
               placeholder="Местность..."
               placeholderTextColor="#BDBDBD"
