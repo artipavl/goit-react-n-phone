@@ -37,4 +37,4 @@ export const auth = getAuth();
 // const database = getDatabase();
 
 // Initialize Cloud Firestore and get a reference to the service
-const db = getFirestore();
+export const db = getFirestore();

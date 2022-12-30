@@ -1,11 +1,11 @@
 import React from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+// import MapView, { Marker } from "react-native-maps";
 
 const MapScreen = ({ params }) => {
   return (
     <View style={styles.container}>
-      <MapView
+      {/* <MapView
         style={styles.mapStyle}
         region={{
           latitude: 37.78825,
@@ -23,7 +23,7 @@ const MapScreen = ({ params }) => {
           coordinate={{ latitude: 37.78825, longitude: -122.4324 }}
           description="Hello"
         />
-      </MapView>
+      </MapView> */}
     </View>
   );
 };
