@@ -5,7 +5,6 @@ import { Feather } from "@expo/vector-icons";
 
 const HomeStack = createStackNavigator();
 
-import { Text, View } from "react-native";
 import PostsScreen from "./PostsScreen";
 import MapScreen from "./MapScreen";
 import CommentsScreen from "./CommentsScreen";
@@ -14,6 +13,7 @@ import { authStateSignOut } from "../../redux/auth/authOptions";
 
 const Home = ({ navigation }) => {
   const dispatch = useDispatch();
+
   return (
     <HomeStack.Navigator>
       <HomeStack.Screen
