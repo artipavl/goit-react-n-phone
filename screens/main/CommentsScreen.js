@@ -16,8 +16,10 @@ import {
   Button,
   SafeAreaView,
   FlatList,
+  TouchableOpacity,
 } from "react-native";
 import { useSelector } from "react-redux";
+import { AntDesign } from "@expo/vector-icons";
 
 const CommentsScreen = ({ navigation, route }) => {
   const [coment, setComent] = useState("");
@@ -41,9 +43,9 @@ const CommentsScreen = ({ navigation, route }) => {
               id: change.doc.id,
               ...change.doc.data(),
             };
-            console.log("post", post);
             if (change.type === "added" && indexOfId(post.id) < 0) {
-              setData((data) => [post, ...data]);
+              console.log(post);
+              setData((data) => [...data, post]);
             }
             if (change.type === "modified") {
               console.log("Modified city: ", change.doc.data());
@@ -84,39 +86,51 @@ const CommentsScreen = ({ navigation, route }) => {
   };
 
   return (
-    <View>
+    <View style={styles.container}>
       <View>
-        <Text>CommentsScreen</Text>
         <Image
           source={{
             uri: item.photo,
             cache: "only-if-cached",
           }}
-          style={{ width: 400, height: 400 }}
+          style={styles.photo}
         />
-        <Text style={{ color: "red" }}>{item.Coment}</Text>
       </View>
       <View>
         <FlatList
+          style={styles.comentList}
           data={data}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <View>
-              <Text style={{ color: "red" }}>{item.coment}</Text>
+            <View style={styles.coment}>
+              <Text style={styles.comentText}>{item.coment}</Text>
+              <Text
+                style={
+                  uid == item.uid ? styles.comentDataUser : styles.comentData
+                }
+              >
+                {Date.now()}
+              </Text>
             </View>
           )}
         />
         <SafeAreaView>
-          <View>
+          <View style={styles.containerForm}>
             <TextInput
               style={styles.input}
               value={coment}
               onChangeText={setComent}
-              placeholder="Название..."
+              placeholder="Комментировать..."
               placeholderTextColor="#BDBDBD"
             />
+            <TouchableOpacity
+              style={styles.comentSubBtn}
+              onPress={addComent}
+              activeOpacity="0.8"
+            >
+              <AntDesign name="arrowup" size={24} color="#FFFFFF" />
+            </TouchableOpacity>
           </View>
-          <Button onPress={addComent} title="cart" />
         </SafeAreaView>
       </View>
     </View>
@@ -131,96 +145,85 @@ const styles = StyleSheet.create({
     paddingTop: 32,
     paddingBottom: 32,
   },
-  cameraContainer: {
-    borderWidth: 1,
-    overflow: "hidden",
-    borderColor: "#E8E8E8",
-    borderRadius: 8,
-    backgroundColor: "#F6F6F6",
+  photo: {
     width: "100%",
     height: 240,
+    borderRadius: 8,
     marginBottom: 8,
   },
-  camera: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-    height: "100%",
+  comentList: {
+    height: 385,
+    overflow: "scroll",
+  },
+  coment: {
+    padding: 16,
+    marginBottom: 24,
+    backgroundColor: "#F6F6F6",
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 6,
+    borderBottomLeftRadius: 6,
+    borderBottomRightRadius: 6,
+  },
+  comentUser: {
+    padding: 16,
+    marginBottom: 24,
+    backgroundColor: "#F6F6F6",
+    borderTopLeftRadius: 6,
+    borderTopRightRadius: 0,
+    borderBottomLeftRadius: 6,
+    borderBottomRightRadius: 6,
+  },
+  comentText: {
+    fontFamily: "Roboto-400",
+    fontSize: 13,
+    lineHeight: 18,
+    color: "#212121",
+    marginBottom: 8,
+  },
+  comentData: {
+    fontFamily: "Roboto-400",
+    fontSize: 10,
+    lineHeight: 12,
+    color: "#BDBDBD",
+    textAlign: "left",
+  },
+  comentDataUser: {
+    fontFamily: "Roboto-400",
+    fontSize: 10,
+    lineHeight: 12,
+    color: "#BDBDBD",
+    textAlign: "right",
+  },
+  containerForm: {
     position: "relative",
-  },
-
-  flipContainer: {
-    position: "absolute",
-    top: 15,
-    right: 15,
-    flex: 1,
-  },
-  takePhotoOut: {
-    borderWidth: 2,
-    borderColor: "white",
-    height: 50,
-    width: 50,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 50,
-  },
-
-  button: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: 60,
-    height: 60,
-    backgroundColor: "#F6F6F6",
-    borderRadius: 50,
-  },
-  photoInfortation: {
-    fontFamily: "Roboto-400",
-    fontSize: 16,
-    lineHeight: 19,
-    color: "#BDBDBD",
-  },
-  subButton: {
-    // display: 1,
-    paddingTop: 16,
-    paddingBottom: 16,
-    marginTop: 32,
-    // backgroundColor: "#FF6C00",
-    backgroundColor: "#F6F6F6",
-    borderRadius: 100,
-  },
-  buttonText: {
-    fontFamily: "Roboto-400",
-    fontSize: 16,
-    lineHeight: 19,
-    textAlign: "center",
-    // color: "#FFFFFF",
-    color: "#BDBDBD",
-  },
-
-  trashButton: {
-    fles: 1,
-    marginLeft: "auto",
-    marginRight: "auto",
-    marginTop: "auto",
-    alignItems: "center",
-    justifyContent: "center",
-    width: 70,
-    height: 40,
-    // backgroundColor: "#FF6C00",
-    backgroundColor: "#F6F6F6",
-    borderRadius: 100,
   },
   input: {
     height: 50,
     alignItems: "center",
     justifyContent: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#E8E8E8",
+    paddingLeft: 16,
+    paddingRight: 50,
+
+    backgroundColor: "#F6F6F6",
+    borderWidth: 1,
+    borderColor: "#E8E8E8",
+    borderRadius: 100,
+
     fontFamily: "Roboto-400",
     color: "#212121",
     fontSize: 16,
     lineHeight: 19,
+  },
+  comentSubBtn: {
+    position: "absolute",
+    right: 8,
+    top: 8,
+    width: 34,
+    height: 34,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FF6C00",
+    borderRadius: 50,
   },
 });
 export default CommentsScreen;
