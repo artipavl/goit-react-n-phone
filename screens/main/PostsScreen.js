@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Button,
   FlatList,
@@ -20,48 +20,10 @@ import {
   query,
 } from "firebase/firestore";
 import { Feather } from "@expo/vector-icons";
+import { MyContext } from "../../components/Main";
 
 const PostsScreen = ({ navigation }) => {
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    getPosts();
-  }, []);
-
-  const getPosts = async () => {
-    try {
-      const db = getFirestore();
-      await onSnapshot(collection(db, "posts"), (snapshot) => {
-        snapshot.docChanges().map((change) => {
-          console.log(change.type);
-          const post = {
-            id: change.doc.id,
-            ...change.doc.data(),
-          };
-          if (change.type === "added" && indexOfId(post.id) < 0) {
-            setData((data) => [post, ...data]);
-          }
-          if (change.type === "modified") {
-            console.log("Modified city: ", change.doc.data());
-          }
-          if (change.type === "removed") {
-            console.log("Removed city: ", change.doc.data());
-          }
-        });
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const indexOfId = (id) => {
-    for (let index = 0; index < data.length; index++) {
-      if (data[index].id == id) {
-        return index;
-      }
-    }
-    return -1;
-  };
+  const data = useContext(MyContext);
 
   return (
     <View style={styles.container}>
