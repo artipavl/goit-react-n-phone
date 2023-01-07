@@ -28,7 +28,7 @@ import { authSignInUser } from "../../redux/auth/authOptions";
 function ProfileScreen({ navigation, datas, route }) {
   // let data = route.params;
   const ollData = useContext(MyContext);
-  const { uid } = useSelector((state) => state.auth);
+  const { uid, email } = useSelector((state) => state.auth);
 
   const data = ollData.filter((item) => item.uid === uid);
   const dispatch = useDispatch();
@@ -36,6 +36,23 @@ function ProfileScreen({ navigation, datas, route }) {
     <View style={styles.container}>
       <ImageBackground source={image} resizeMode="cover" style={styles.image}>
         <View style={styles.profile}>
+          <Image
+            // source={{
+            //   uri: item.photo,
+            //   cache: "only-if-cached",
+            // }}
+            // style={{ width: 60, height: 60, backgroundColor: "red" }}
+            style={styles.userImg}
+          />
+          <View style={styles.profileTitle}>
+            <Text style={styles.profileTitleText}>{email}</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.logOut}
+            onPress={() => dispatch(authStateSignOut())}
+          >
+            <Feather name="log-out" size={24} color="#BDBDBD" />
+          </TouchableOpacity>
           <FlatList
             data={data}
             keyExtractor={(item) => item.id}
@@ -88,14 +105,25 @@ export default ProfileScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // paddingTop: 147,
   },
-
+  userImg: {
+    // ...StyleSheet.absoluteFill,
+    position: "absolute",
+    right: "50%",
+    transform: [{ translateX: 30 }, { translateY: -60 }],
+    width: 120,
+    height: 120,
+    backgroundColor: "red",
+    borderRadius: 16,
+  },
   image: {
     flex: 1,
     resizeMode: "cover",
     justifyContent: "flex-end",
     paddingTop: 147,
+  },
+  profileTitle: {
+    marginBottom: 33,
   },
   profileTitleText: {
     fontFamily: "Roboto-500",
@@ -106,6 +134,7 @@ const styles = StyleSheet.create({
     color: "#212121",
   },
   profile: {
+    position: "relative",
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
     paddingTop: 92,
@@ -115,9 +144,10 @@ const styles = StyleSheet.create({
 
     backgroundColor: "#ffffff",
   },
-  profileTitle: {
-    marginBottom: 32,
-    alignItems: "center",
+  logOut: {
+    position: "absolute",
+    top: 22,
+    right: 16,
   },
   post: {
     marginBottom: 34,

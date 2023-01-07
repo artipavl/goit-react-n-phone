@@ -10,7 +10,7 @@ import * as SplashScreen from "expo-splash-screen";
 
 SplashScreen.preventAutoHideAsync();
 
-import { Button, StyleSheet, Text, View } from "react-native";
+import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import LoginScreen from "../screens/auth/LoginScreen";
 import RegisterScreen from "../screens/auth/RegisterScreen";
@@ -131,12 +131,12 @@ export default function Main() {
                 headerLeft: () => {
                   const navigation = useNavigation();
                   return (
-                    <Feather
-                      name="arrow-left"
-                      size={24}
-                      color="black"
+                    <TouchableOpacity
+                      style={{ paddingLeft: 16 }}
                       onPress={() => navigation.goBack()}
-                    />
+                    >
+                      <Feather name="arrow-left" size={24} color="black" />
+                    </TouchableOpacity>
                   );
                 },
                 headerTintColor: "#212121",

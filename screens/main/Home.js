@@ -10,6 +10,7 @@ import MapScreen from "./MapScreen";
 import CommentsScreen from "./CommentsScreen";
 import { useDispatch } from "react-redux";
 import { authStateSignOut } from "../../redux/auth/authOptions";
+import { TouchableOpacity } from "react-native";
 
 const Home = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -26,12 +27,12 @@ const Home = ({ navigation }) => {
           },
           headerTitleAlign: "center",
           headerRight: () => (
-            <Feather
-              name="log-out"
-              size={24}
-              color="black"
+            <TouchableOpacity
+              style={{ paddingRight: 16 }}
               onPress={() => dispatch(authStateSignOut())}
-            />
+            >
+              <Feather name="log-out" size={24} color="#BDBDBD" />
+            </TouchableOpacity>
           ),
         }}
       />
@@ -47,12 +48,12 @@ const Home = ({ navigation }) => {
           headerLeft: () => {
             // const navigation = useNavigation();
             return (
-              <Feather
-                name="arrow-left"
-                size={24}
-                color="black"
+              <TouchableOpacity
+                style={{ paddingLeft: 16 }}
                 onPress={() => navigation.goBack()}
-              />
+              >
+                <Feather name="arrow-left" size={24} color="black" />
+              </TouchableOpacity>
             );
           },
         }}
@@ -69,12 +70,12 @@ const Home = ({ navigation }) => {
           headerLeft: () => {
             // const navigation = useNavigation();
             return (
-              <Feather
-                name="arrow-left"
-                size={24}
-                color="black"
+              <TouchableOpacity
+                style={{ paddingLeft: 16 }}
                 onPress={() => navigation.goBack()}
-              />
+              >
+                <Feather name="arrow-left" size={24} color="black" />
+              </TouchableOpacity>
             );
           },
         }}

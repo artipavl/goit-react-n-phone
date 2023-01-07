@@ -102,15 +102,25 @@ const CommentsScreen = ({ navigation, route }) => {
           data={data}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <View style={styles.coment}>
-              <Text style={styles.comentText}>{item.coment}</Text>
-              <Text
-                style={
-                  uid == item.uid ? styles.comentDataUser : styles.comentData
-                }
-              >
-                {Date.now()}
-              </Text>
+            <View style={styles.coments}>
+              <Image
+                // source={{
+                //   uri: item.photo,
+                //   cache: "only-if-cached",
+                // }}
+                // style={{ width: 60, height: 60, backgroundColor: "red" }}
+                style={styles.userImg}
+              />
+              <View style={styles.coment}>
+                <Text style={styles.comentText}>{item.coment}</Text>
+                <Text
+                  style={
+                    uid == item.uid ? styles.comentDataUser : styles.comentData
+                  }
+                >
+                  {Date.now()}
+                </Text>
+              </View>
             </View>
           )}
         />
@@ -144,18 +154,35 @@ const styles = StyleSheet.create({
     paddingRight: 16,
     paddingTop: 32,
     paddingBottom: 32,
+    overflow: "hidden",
+    // minHeight: "100%",
   },
   photo: {
     width: "100%",
     height: 240,
     borderRadius: 8,
     marginBottom: 8,
+    marginBottom: 32,
   },
   comentList: {
-    height: 385,
+    // height: "100%",
+    // minHeight: "100%",
+    height: 400,
     overflow: "scroll",
   },
+  coments: {
+    flexDirection: "row",
+  },
+  userImg: {
+    width: 24,
+    height: 24,
+    backgroundColor: "red",
+    borderRadius: 50,
+    marginRight: 16,
+  },
+
   coment: {
+    width: "100%",
     padding: 16,
     marginBottom: 24,
     backgroundColor: "#F6F6F6",

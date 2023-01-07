@@ -21,13 +21,30 @@ import {
 } from "firebase/firestore";
 import { Feather } from "@expo/vector-icons";
 import { MyContext } from "../../components/Main";
+import { useSelector } from "react-redux";
 
 const PostsScreen = ({ navigation }) => {
+  const { email, userName } = useSelector((state) => state.auth);
   const data = useContext(MyContext);
 
   return (
     <View style={styles.container}>
-      <Text>PostsScreen</Text>
+      <View style={styles.user}>
+        <View>
+          <Image
+            // source={{
+            //   uri: item.photo,
+            //   cache: "only-if-cached",
+            // }}
+            // style={{ width: 60, height: 60, backgroundColor: "red" }}
+            style={styles.userImg}
+          />
+        </View>
+        <View style={styles.userInformation}>
+          <Text style={styles.userName}>{email}</Text>
+          <Text style={styles.userEmail}>{email}</Text>
+        </View>
+      </View>
       <FlatList
         data={data}
         keyExtractor={(item) => item.id}
@@ -79,6 +96,33 @@ const styles = StyleSheet.create({
     paddingRight: 16,
     paddingTop: 32,
     paddingBottom: 32,
+    backgroundColor: "#fff",
+  },
+  user: {
+    flexDirection: "row",
+    marginBottom: 32,
+  },
+  userInformation: {
+    marginLeft: 8,
+    justifyContent: "center",
+  },
+  userImg: {
+    width: 60,
+    height: 60,
+    backgroundColor: "red",
+    borderRadius: 16,
+  },
+  userName: {
+    fontFamily: "Roboto-700",
+    fontSize: 13,
+    lineHeight: 15,
+    color: "#212121",
+  },
+  userEmail: {
+    fontFamily: "Roboto-400",
+    fontSize: 11,
+    lineHeight: 13,
+    color: "rgba(33, 33, 33, 0.8)",
   },
   post: {
     marginBottom: 34,
