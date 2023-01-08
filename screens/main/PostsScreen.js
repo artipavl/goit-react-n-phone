@@ -24,7 +24,7 @@ import { MyContext } from "../../components/Main";
 import { useSelector } from "react-redux";
 
 const PostsScreen = ({ navigation }) => {
-  const { email, userName } = useSelector((state) => state.auth);
+  const { email, userName, photoURL } = useSelector((state) => state.auth);
   const data = useContext(MyContext);
 
   return (
@@ -32,16 +32,16 @@ const PostsScreen = ({ navigation }) => {
       <View style={styles.user}>
         <View>
           <Image
-            // source={{
-            //   uri: item.photo,
-            //   cache: "only-if-cached",
-            // }}
+            source={{
+              uri: photoURL,
+              cache: "only-if-cached",
+            }}
             // style={{ width: 60, height: 60, backgroundColor: "red" }}
             style={styles.userImg}
           />
         </View>
         <View style={styles.userInformation}>
-          <Text style={styles.userName}>{email}</Text>
+          <Text style={styles.userName}>{userName}</Text>
           <Text style={styles.userEmail}>{email}</Text>
         </View>
       </View>

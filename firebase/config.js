@@ -13,12 +13,12 @@ import { getFirestore } from "firebase/firestore";
 const firebaseConfig = {
   apiKey: "AIzaSyAryDnuf5gS5gREzOz2Hq9uCTwAlASeKUM",
   authDomain: "you-gallery-rn.firebaseapp.com",
+  // databaseURL: "https://you-gallery-rn-default-rtdb.firebaseio.com",
   projectId: "you-gallery-rn",
   storageBucket: "you-gallery-rn.appspot.com",
   messagingSenderId: "316350288170",
   appId: "1:316350288170:web:3f451a215efc9597bc4e53",
   measurementId: "G-N8C3D4H0EN",
-  // databaseURL: "https://you-gallery-rn-default-rtdb.firebaseio.com/",
 };
 
 // Initialize Firebase
@@ -31,7 +31,7 @@ export const app = initializeApp(firebaseConfig);
 export const storage = getStorage();
 
 // Initialize
-export const auth = getAuth();
+export const auth = getAuth(app);
 
 // Initialize Realtime Database and get a reference to the service
 // const database = getDatabase();

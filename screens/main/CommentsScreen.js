@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
   comentList: {
     // height: "100%",
     // minHeight: "100%",
-    height: 400,
+    height: 200,
     overflow: "scroll",
   },
   coments: {

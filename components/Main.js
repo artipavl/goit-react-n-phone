@@ -42,26 +42,40 @@ export default function Main() {
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    // dispatch(authStateChangeUser());
-    // const auth = getAuth();
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        dispatch(
-          authStateChangeUser({
-            email: user.email,
-            name: user.phoneNumber,
-            uid: user.uid,
-          })
-        );
-        // return { email: user.email, name: user.phoneNumber, uid: user.uid };
-      }
-    });
-  }, []);
+  // useEffect(() => {
+  //   // dispatch(authStateChangeUser());
+  //   // const auth = getAuth();
+  //   onAuthStateChanged(auth, (user) => {
+  //     if (user) {
+  //       dispatch(
+  //         authStateChangeUser({
+  //           email: user.email,
+  //           name: user.displayName,
+  //           uid: user.uid,
+  //           photoURL: user.photoURL,
+  //         })
+  //       );
+  //       // return { email: user.email, name: user.phoneNumber, uid: user.uid };
+  //     }
+  //   });
+  // }, []);
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      dispatch(
+        authStateChangeUser({
+          email: user.email,
+          name: user.displayName,
+          uid: user.uid,
+          photoURL: user.photoURL,
+        })
+      );
+      // return { email: user.email, name: user.phoneNumber, uid: user.uid };
+    }
+  });
 
   useEffect(() => {
-    getPosts();
-  }, []);
+    isLoggedIn && getPosts();
+  }, [isLoggedIn, getPosts]);
 
   const getPosts = async () => {
     try {

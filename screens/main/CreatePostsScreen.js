@@ -14,7 +14,7 @@ import { FontAwesome, Feather } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import { app, storage } from "../../firebase/config";
 // import { getDatabase, ref, set } from "firebase/database";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { useSelector } from "react-redux";
 import { collection, addDoc, getFirestore } from "firebase/firestore";
 
@@ -69,10 +69,12 @@ const CreatePostsScreen = ({}) => {
       const file = await response.blob();
       const postId = Date.now().toString();
 
+      const storage = getStorage();
       const storageRef = await ref(storage, `images/${postId}`);
       await uploadBytes(storageRef, file);
       const photoUrl = await getDownloadURL(storageRef);
       console.log("test ", photoUrl);
+
       await addPostData({
         uid,
         userName,
@@ -82,7 +84,7 @@ const CreatePostsScreen = ({}) => {
         location,
       });
       console.log("done");
-      // console.log(storageRef);
+      console.log(storageRef);
     } catch (error) {
       console.log(error);
     }

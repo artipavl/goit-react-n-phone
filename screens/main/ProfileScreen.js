@@ -24,28 +24,30 @@ import { Feather } from "@expo/vector-icons";
 import image from "../../assets/Images/PhotoBG.jpg";
 import { MyContext } from "../../components/Main";
 import { authSignInUser } from "../../redux/auth/authOptions";
+import { async } from "@firebase/util";
 
 function ProfileScreen({ navigation, datas, route }) {
   // let data = route.params;
   const ollData = useContext(MyContext);
-  const { uid, email } = useSelector((state) => state.auth);
+  const { uid, email, photoURL, userName } = useSelector((state) => state.auth);
 
   const data = ollData.filter((item) => item.uid === uid);
   const dispatch = useDispatch();
+
   return (
     <View style={styles.container}>
       <ImageBackground source={image} resizeMode="cover" style={styles.image}>
         <View style={styles.profile}>
           <Image
-            // source={{
-            //   uri: item.photo,
-            //   cache: "only-if-cached",
-            // }}
+            source={{
+              uri: photoURL,
+              cache: "only-if-cached",
+            }}
             // style={{ width: 60, height: 60, backgroundColor: "red" }}
             style={styles.userImg}
           />
           <View style={styles.profileTitle}>
-            <Text style={styles.profileTitleText}>{email}</Text>
+            <Text style={styles.profileTitleText}>{userName}</Text>
           </View>
           <TouchableOpacity
             style={styles.logOut}
@@ -54,6 +56,7 @@ function ProfileScreen({ navigation, datas, route }) {
             <Feather name="log-out" size={24} color="#BDBDBD" />
           </TouchableOpacity>
           <FlatList
+            style={styles.list}
             data={data}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
@@ -140,7 +143,7 @@ const styles = StyleSheet.create({
     paddingTop: 92,
     paddingLeft: 16,
     paddingRight: 16,
-    paddingBottom: 79,
+    // paddingBottom: 79,
 
     backgroundColor: "#ffffff",
   },
@@ -148,6 +151,9 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 22,
     right: 16,
+  },
+  list: {
+    maxHeight: 421,
   },
   post: {
     marginBottom: 34,

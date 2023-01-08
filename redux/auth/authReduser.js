@@ -10,6 +10,7 @@ const initialState = {
   uid: null,
   userName: null,
   email: null,
+  photoURL: null,
   isLoggedIn: false,
   isRefreshing: false,
   error: null,
@@ -23,6 +24,7 @@ export const authSlice = createSlice({
       state.email = action.payload.email;
       state.userName = action.payload.name;
       state.uid = action.payload.uid;
+      state.photoURL = action.payload.photoURL;
       state.isLoggedIn = true;
     });
     builder.addCase(authSignInUser.rejected, (state, action) => {
@@ -34,6 +36,7 @@ export const authSlice = createSlice({
       state.email = action.payload.email;
       state.userName = action.payload.name;
       state.uid = action.payload.uid;
+      state.photoURL = action.payload.photoURL;
       state.isLoggedIn = true;
     });
     builder.addCase(authSignUpUser.rejected, (state, action) => {
@@ -45,6 +48,7 @@ export const authSlice = createSlice({
       state.email = action.payload.email;
       state.userName = action.payload.name;
       state.uid = action.payload.uid;
+      state.photoURL = action.payload.photoURL;
       state.isLoggedIn = true;
     });
     builder.addCase(authStateChangeUser.rejected, (state, action) => {

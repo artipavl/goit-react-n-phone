@@ -1,9 +1,12 @@
+import { EvilIcons } from "@expo/vector-icons";
+
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import {
   StyleSheet,
   Text,
   View,
+  Image,
   ImageBackground,
   SafeAreaView,
   TextInput,
@@ -17,34 +20,75 @@ import {
   TouchableHighlight,
 } from "react-native";
 import { useDispatch } from "react-redux";
+import * as DocumentPicker from "expo-document-picker";
 import image from "../../assets/Images/PhotoBG.jpg";
 import { authSignUpUser } from "../../redux/auth/authOptions";
+import { getDownloadURL, uploadBytes, ref, getStorage } from "firebase/storage";
 
 function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [image, setImage] = useState(null);
   const dispatch = useDispatch();
 
   const onCloseKeyboard = () => {
     Keyboard.dismiss();
   };
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     console.log(email);
     console.log(password);
     console.log(name);
-    dispatch(authSignUpUser({ name, password, email }));
+    console.log(image);
+
+    dispatch(authSignUpUser({ name, password, email, image }));
+    
     Keyboard.dismiss();
     setEmail("");
     setPassword("");
     setName("");
   };
+
+  const test = async () => {
+    console.log("asdasd");
+    try {
+      const picked = await DocumentPicker.getDocumentAsync({
+        type: "image/*",
+      });
+      console.log(picked);
+      if (!picked.uri) {
+        return;
+      }
+      setImage(picked.uri);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <TouchableWithoutFeedback onPress={onCloseKeyboard}>
         <ImageBackground source={image} resizeMode="cover" style={styles.image}>
           <SafeAreaView style={styles.form}>
+            <View style={styles.userImgBox}>
+              <Image
+                // source={{
+                //   uri: item.photo,
+                //   cache: "only-if-cached",
+                // }}
+                // style={{ width: 60, height: 60, backgroundColor: "red" }}
+                style={styles.userImg}
+              />
+              <TouchableOpacity
+                style={styles.inputLodoBtn}
+                onPress={test}
+                activeOpacity="0.8"
+              >
+                <EvilIcons name="close" size={24} color="#E8E8E8" />
+              </TouchableOpacity>
+            </View>
+
             <View style={styles.formTitle}>
               <Text style={styles.formTitleText}>Регистрация</Text>
             </View>
@@ -128,6 +172,7 @@ const styles = StyleSheet.create({
     color: "#212121",
   },
   form: {
+    position: "relative",
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
     paddingTop: 92,
@@ -136,6 +181,36 @@ const styles = StyleSheet.create({
     paddingBottom: 79,
 
     backgroundColor: "#ffffff",
+  },
+  userImgBox: {
+    // ...StyleSheet.absoluteFill,
+    position: "absolute",
+    right: "22.5%",
+    transform: [{ translateX: -60 }, { translateY: -60 }],
+    // width: 120,
+    // height: 120,
+    backgroundColor: "red",
+    borderRadius: 16,
+  },
+  userImg: {
+    width: 120,
+    height: 120,
+    borderRadius: 16,
+  },
+  inputLodoBtn: {
+    position: "absolute",
+    transform: [{ translateX: 12.5 }, { translateY: -12.5 }],
+    top: 93,
+    right: 0,
+
+    alignItems: "center",
+    justifyContent: "center",
+    width: 25,
+    height: 25,
+    borderRadius: 50,
+    borderWidth: 1,
+    borderColor: "#E8E8E8",
+    backgroundColor: "#fff",
   },
   formTitle: {
     marginBottom: 32,

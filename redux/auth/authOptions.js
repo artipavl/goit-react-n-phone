@@ -1,4 +1,4 @@
-import app from "../../firebase/config";
+import app, { storage } from "../../firebase/config";
 // console.log(app);
 import { auth } from "../../firebase/config";
 
@@ -13,6 +13,13 @@ import {
 } from "firebase/auth";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes,
+  uploadBytesResumable,
+} from "firebase/storage";
 
 export const authSignInUser = createAsyncThunk(
   "auth/SignIn",
@@ -21,7 +28,12 @@ export const authSignInUser = createAsyncThunk(
       const auth = getAuth();
       const { user } = await signInWithEmailAndPassword(auth, email, password);
       console.log(user);
-      return { email: user.email, name: user.phoneNumber, uid: user.uid };
+      return {
+        email: user.email,
+        name: user.displayName,
+        uid: user.uid,
+        photoURL: user.photoURL,
+      };
     } catch (error) {
       console.log(error);
       return thunkAPI.rejectWithValue(error.message);
@@ -31,7 +43,7 @@ export const authSignInUser = createAsyncThunk(
 
 export const authSignUpUser = createAsyncThunk(
   "auth/SignUp",
-  async ({ email, password, name }, thunkAPI) => {
+  async ({ email, password, name, image }, thunkAPI) => {
     try {
       const auth = getAuth();
       const { user } = await createUserWithEmailAndPassword(
@@ -39,11 +51,34 @@ export const authSignUpUser = createAsyncThunk(
         email,
         password
       );
+      console.log("image ", image);
+
+      const response = await fetch(image);
+      const file = await response.blob();
+      const logoId = Date.now().toString();
+
+      const storage = getStorage();
+      const storageRef = await ref(storage, `userLogo/${logoId}`);
+      console.log("storageRef ", storageRef);
+
+      const uploadBytesBd = await uploadBytes(storageRef, file);
+      console.log("uploadBytesBd ", uploadBytesBd);
+
+      const logoUrl = await getDownloadURL(storageRef);
+      console.log("logoUrl ", logoUrl);
+
       await updateProfile(auth.currentUser, {
         displayName: name,
+        photoURL: logoUrl,
       });
-      console.log(user);
-      return { email: user.email, name: user.phoneNumber, uid: user.uid };
+
+      console.log("userCC", user);
+      return {
+        email: user.email,
+        name: user.displayName,
+        uid: user.uid,
+        photoURL: user.photoURL,
+      };
     } catch (error) {
       console.log(error);
       return thunkAPI.rejectWithValue(error.message);
