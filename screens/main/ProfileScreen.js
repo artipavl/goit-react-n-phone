@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     transform: [{ translateX: 30 }, { translateY: -60 }],
     width: 120,
     height: 120,
-    backgroundColor: "red",
+    backgroundColor: "#F6F6F6",
     borderRadius: 16,
   },
   image: {
