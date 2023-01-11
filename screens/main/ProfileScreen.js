@@ -1,3 +1,5 @@
+import { EvilIcons, AntDesign } from "@expo/vector-icons";
+
 import { StatusBar } from "expo-status-bar";
 import { useContext, useState } from "react";
 import {
@@ -20,10 +22,10 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Feather } from "@expo/vector-icons";
-
+import * as DocumentPicker from "expo-document-picker";
 import image from "../../assets/Images/PhotoBG.jpg";
 import { MyContext } from "../../components/Main";
-import { authSignInUser } from "../../redux/auth/authOptions";
+import { authAddPhotoURL, authSignInUser } from "../../redux/auth/authOptions";
 import { async } from "@firebase/util";
 
 function ProfileScreen({ navigation, datas, route }) {
@@ -34,18 +36,50 @@ function ProfileScreen({ navigation, datas, route }) {
   const data = ollData.filter((item) => item.uid === uid);
   const dispatch = useDispatch();
 
+  const addImages = async () => {
+    try {
+      const picked = await DocumentPicker.getDocumentAsync({
+        type: "image/*",
+      });
+      console.log(picked);
+      if (!picked.uri) {
+        return;
+      }
+      dispatch(authAddPhotoURL({ image: picked.uri }));
+      // setImage(picked.uri);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <ImageBackground source={image} resizeMode="cover" style={styles.image}>
         <View style={styles.profile}>
-          <Image
-            source={{
-              uri: photoURL,
-              cache: "only-if-cached",
-            }}
-            // style={{ width: 60, height: 60, backgroundColor: "red" }}
-            style={styles.userImg}
-          />
+          <View style={styles.userImgBox}>
+            <Image
+              source={{
+                uri: photoURL,
+              }}
+              // style={{ width: 60, height: 60, backgroundColor: "red" }}
+              style={styles.userImg}
+            />
+            <TouchableOpacity
+              style={
+                photoURL
+                  ? styles.inputLodoBtn
+                  : { ...styles.inputLodoBtn, borderColor: "#FF6C00" }
+              }
+              onPress={addImages}
+              activeOpacity="0.8"
+            >
+              {image ? (
+                <EvilIcons name="close" size={24} color="#E8E8E8" />
+              ) : (
+                <AntDesign name="plus" size={13} color="#FF6C00" />
+              )}
+            </TouchableOpacity>
+          </View>
           <View style={styles.profileTitle}>
             <Text style={styles.profileTitleText}>{userName}</Text>
           </View>
@@ -109,15 +143,35 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  userImg: {
+  userImgBox: {
     // ...StyleSheet.absoluteFill,
     position: "absolute",
-    right: "50%",
-    transform: [{ translateX: 30 }, { translateY: -60 }],
-    width: 120,
-    height: 120,
+    right: "22.5%",
+    transform: [{ translateX: -60 }, { translateY: -60 }],
+    // width: 120,
+    // height: 120,
     backgroundColor: "#F6F6F6",
     borderRadius: 16,
+  },
+  userImg: {
+    width: 120,
+    height: 120,
+    borderRadius: 16,
+  },
+  inputLodoBtn: {
+    position: "absolute",
+    transform: [{ translateX: 12.5 }, { translateY: -12.5 }],
+    top: 93,
+    right: 0,
+
+    alignItems: "center",
+    justifyContent: "center",
+    width: 25,
+    height: 25,
+    borderRadius: 50,
+    borderWidth: 1,
+    borderColor: "#E8E8E8",
+    backgroundColor: "#fff",
   },
   image: {
     flex: 1,

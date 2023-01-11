@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
+  authAddPhotoURL,
   authSignInUser,
   authSignUpUser,
   authStateChangeUser,
@@ -51,9 +52,18 @@ export const authSlice = createSlice({
       state.photoURL = action.payload.photoURL;
       state.isLoggedIn = true;
     });
+    
     builder.addCase(authStateChangeUser.rejected, (state, action) => {
       state.error = action.payload;
       state.isLoggedIn = false;
+    });
+
+    builder.addCase(authAddPhotoURL.fulfilled, (state, action) => {
+      state.photoURL = action.payload.photoURL;
+    });
+
+    builder.addCase(authAddPhotoURL.rejected, (state, action) => {
+      state.error = action.payload;
     });
 
     builder.addCase(authStateSignOut.fulfilled, (state, action) => ({

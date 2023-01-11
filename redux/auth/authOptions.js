@@ -122,3 +122,38 @@ export const authStateSignOut = createAsyncThunk(
     }
   }
 );
+export const authAddPhotoURL = createAsyncThunk(
+  "auth/AddPhotoURL",
+  async ({ image }, thunkAPI) => {
+    try {
+      const auth = getAuth();
+     
+      const response = await fetch(image);
+      const file = await response.blob();
+      const logoId = Date.now().toString();
+
+      const storage = getStorage();
+      const storageRef = await ref(storage, `userLogo/${logoId}`);
+      console.log("storageRef ", storageRef);
+
+      const uploadBytesBd = await uploadBytes(storageRef, file);
+      console.log("uploadBytesBd ", uploadBytesBd);
+
+      const logoUrl = await getDownloadURL(storageRef);
+      console.log("logoUrl ", logoUrl);
+
+      await updateProfile(auth.currentUser, {
+        photoURL: logoUrl,
+      });
+
+
+      return {
+        photoURL: logoUrl,
+      };
+      
+    } catch (error) {
+      console.log(error);
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
