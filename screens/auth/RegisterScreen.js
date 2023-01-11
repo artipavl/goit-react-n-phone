@@ -50,7 +50,7 @@ function RegisterScreen({ navigation }) {
     setName("");
   };
 
-  const test = async () => {
+  const addImages = async () => {
     console.log("asdasd");
     try {
       const picked = await DocumentPicker.getDocumentAsync({
@@ -85,7 +85,7 @@ function RegisterScreen({ navigation }) {
                     ? styles.inputLodoBtn
                     : { ...styles.inputLodoBtn, borderColor: "#FF6C00" }
                 }
-                onPress={test}
+                onPress={addImages}
                 activeOpacity="0.8"
               >
                 {image ? (
