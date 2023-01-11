@@ -1,4 +1,4 @@
-import { EvilIcons } from "@expo/vector-icons";
+import { EvilIcons, AntDesign } from "@expo/vector-icons";
 
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
@@ -43,7 +43,7 @@ function RegisterScreen({ navigation }) {
     console.log(image);
 
     dispatch(authSignUpUser({ name, password, email, image }));
-    
+
     Keyboard.dismiss();
     setEmail("");
     setPassword("");
@@ -73,19 +73,26 @@ function RegisterScreen({ navigation }) {
           <SafeAreaView style={styles.form}>
             <View style={styles.userImgBox}>
               <Image
-                // source={{
-                //   uri: item.photo,
-                //   cache: "only-if-cached",
-                // }}
+                source={{
+                  uri: image,
+                }}
                 // style={{ width: 60, height: 60, backgroundColor: "red" }}
                 style={styles.userImg}
               />
               <TouchableOpacity
-                style={styles.inputLodoBtn}
+                style={
+                  image
+                    ? styles.inputLodoBtn
+                    : { ...styles.inputLodoBtn, borderColor: "#FF6C00" }
+                }
                 onPress={test}
                 activeOpacity="0.8"
               >
-                <EvilIcons name="close" size={24} color="#E8E8E8" />
+                {image ? (
+                  <EvilIcons name="close" size={24} color="#E8E8E8" />
+                ) : (
+                  <AntDesign name="plus" size={13} color="#FF6C00" />
+                )}
               </TouchableOpacity>
             </View>
 
@@ -189,7 +196,7 @@ const styles = StyleSheet.create({
     transform: [{ translateX: -60 }, { translateY: -60 }],
     // width: 120,
     // height: 120,
-    backgroundColor: "red",
+    backgroundColor: "#F6F6F6",
     borderRadius: 16,
   },
   userImg: {
