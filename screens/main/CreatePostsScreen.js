@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Camera, CameraType } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import {
@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
   TextInput,
   SafeAreaView,
+  ImageBackground,
+  Image,
 } from "react-native";
 import { FontAwesome, Feather } from "@expo/vector-icons";
 import * as Location from "expo-location";
@@ -18,15 +20,16 @@ import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { useSelector } from "react-redux";
 import { collection, addDoc, getFirestore } from "firebase/firestore";
 
-const CreatePostsScreen = ({}) => {
+const CreatePostsScreen = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState(null);
-  const [cameraRef, setCameraRef] = useState(null);
   const [type, setType] = useState(() => Camera.Constants.Type.back);
-  const [photo, setPhoto] = useState("");
+  const [photo, setPhoto] = useState(null);
   const [name, setName] = useState("");
   const [locationUser, setLocationUser] = useState("");
   const [location, setLocation] = useState(null);
   const { uid, userName } = useSelector((state) => state.auth);
+
+  const cameraRef = useRef();
 
   useEffect(() => {
     (async () => {
@@ -62,9 +65,12 @@ const CreatePostsScreen = ({}) => {
     return <Text>No access to camera</Text>;
   }
 
-  const onSubmit = async () => {
+  const onSubmit = async (e) => {
+    if (!photo || !name || !locationUser) {
+      return console.log("test");
+    }
+    console.log(photo, name, locationUser, location);
     try {
-      console.log(photo, name, locationUser, location);
       const response = await fetch(photo);
       const file = await response.blob();
       const postId = Date.now().toString();
@@ -85,9 +91,19 @@ const CreatePostsScreen = ({}) => {
       });
       console.log("done");
       console.log(storageRef);
+
+      resetForm();
+      navigation.navigate("Публикации");
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const resetForm = () => {
+    setPhoto(null);
+    setName("");
+    setLocationUser("");
+    console.log(photo);
   };
 
   const addPostData = async (post) => {
@@ -103,13 +119,17 @@ const CreatePostsScreen = ({}) => {
   return (
     <View style={styles.container}>
       <View style={styles.cameraContainer}>
-        <Camera
-          style={styles.camera}
-          type={type}
-          ref={(ref) => {
-            setCameraRef(ref);
-          }}
-        >
+        <Camera style={styles.camera} type={type} ref={cameraRef}>
+          {photo && (
+            <View style={styles.cameraImageBox}>
+              <Image
+                source={{
+                  uri: photo,
+                }}
+                style={styles.cameraImage}
+              />
+            </View>
+          )}
           <TouchableOpacity
             style={styles.flipContainer}
             onPress={() => {
@@ -128,11 +148,22 @@ const CreatePostsScreen = ({}) => {
           <TouchableOpacity
             style={styles.button}
             onPress={async () => {
-              if (cameraRef) {
-                const { uri } = await cameraRef.takePictureAsync();
-                await MediaLibrary.createAssetAsync(uri);
-                console.log(uri);
-                setPhoto(uri);
+              if (cameraRef.current) {
+                try {
+                  const options = {
+                    quality: 0.5,
+                    base64: true,
+                    skipProcessing: true,
+                  };
+                  const { uri } = await cameraRef.current.takePictureAsync(
+                    options
+                  );
+                  await MediaLibrary.createAssetAsync(uri);
+                  console.log(uri);
+                  setPhoto(uri);
+                } catch (error) {
+                  console.log(error);
+                }
               }
             }}
           >
@@ -193,10 +224,7 @@ const CreatePostsScreen = ({}) => {
           </TouchableOpacity>
         </SafeAreaView>
       </View>
-      <TouchableOpacity
-        style={styles.trashButton}
-        // onPress={}
-      >
+      <TouchableOpacity style={styles.trashButton} onPress={resetForm}>
         <Feather name="trash-2" size={24} color="#BDBDBD" />
       </TouchableOpacity>
     </View>
@@ -227,6 +255,18 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     position: "relative",
+  },
+  cameraImageBox: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    pointerEvents: "all",
+  },
+  cameraImage: {
+    width: "100%",
+    height: "100%",
   },
 
   flipContainer: {
