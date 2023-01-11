@@ -37,8 +37,10 @@ import { auth } from "../firebase/config";
 export const MyContext = createContext("");
 
 export default function Main() {
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const { uid, isLoggedIn } = useSelector((state) => state.auth);
   const [data, setData] = useState([]);
+  // const [length, setLength] = useState(0);
+  // const [active, setActive] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -59,6 +61,7 @@ export default function Main() {
   //     }
   //   });
   // }, []);
+
   onAuthStateChanged(auth, (user) => {
     if (user) {
       dispatch(
@@ -81,13 +84,18 @@ export default function Main() {
     try {
       const db = getFirestore();
       await onSnapshot(collection(db, "posts"), (snapshot) => {
-        snapshot.docChanges().map((change) => {
+        snapshot.docChanges().map(async (change) => {
           console.log(change.type);
+
+          test(change.doc.id);
           const post = {
             id: change.doc.id,
             ...change.doc.data(),
+            length: 0,
+            active: false,
           };
           if (change.type === "added" && indexOfId(post.id) < 0) {
+            // console.log(data);
             setData((data) => [post, ...data]);
           }
           if (change.type === "modified") {
@@ -101,6 +109,26 @@ export default function Main() {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const test = async (id) => {
+    let length = 0;
+    let active = false;
+
+    const db = getFirestore();
+    console.log("uid", id);
+
+    const querySnapshot = await getDocs(collection(db, "posts", id, "comand"));
+
+    await querySnapshot.forEach((doc) => {
+      length++;
+      if (doc.data().uid === uid) {
+        active = true;
+      }
+    });
+    setData((data) =>
+      data.map((item) => (item.id === id ? { ...item, length, active } : item))
+    );
   };
 
   const indexOfId = (id) => {

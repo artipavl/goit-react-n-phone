@@ -24,8 +24,10 @@ import { MyContext } from "../../components/Main";
 import { useSelector } from "react-redux";
 
 const PostsScreen = ({ navigation }) => {
-  const { email, userName, photoURL } = useSelector((state) => state.auth);
+  const { email, userName, photoURL, uid } = useSelector((state) => state.auth);
   const data = useContext(MyContext);
+  console.log("data", data);
+  const db = getFirestore();
 
   return (
     <View style={styles.container}>
@@ -48,42 +50,55 @@ const PostsScreen = ({ navigation }) => {
       <FlatList
         data={data}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.post}>
-            <Image
-              source={{
-                uri: item.photo,
-                cache: "only-if-cached",
-              }}
-              // style={{ width: 400, height: 400 }}
-              style={styles.photo}
-            />
+        renderItem={({ item }) => {
+          return (
+            <View style={styles.post}>
+              <Image
+                source={{
+                  uri: item.photo,
+                  cache: "only-if-cached",
+                }}
+                // style={{ width: 400, height: 400 }}
+                style={styles.photo}
+              />
 
-            <Text style={styles.nameText}>{item.name}</Text>
+              <Text style={styles.nameText}>{item.name}</Text>
 
-            <View style={styles.interaction}>
-              <TouchableOpacity
-                style={styles.interactionBtn}
-                onPress={() => navigation.navigate("Коментарии", { item })}
-                activeOpacity="0.8"
-              >
-                <Feather name="message-circle" size={24} color="#BDBDBD" />
-                <Text style={styles.coments}>0</Text>
-              </TouchableOpacity>
+              <View style={styles.interaction}>
+                <TouchableOpacity
+                  style={styles.interactionBtn}
+                  onPress={() => navigation.navigate("Коментарии", { item })}
+                  activeOpacity="0.8"
+                >
+                  <Feather
+                    name="message-circle"
+                    size={24}
+                    color={item.active ? "#FF6C00" : "#BDBDBD"}
+                    // iconStyle={{ paddingLeft: 100 }}
+                    // style={{
+                    //   // backgroundColor: "red",
+                    //   visibility: "hidden",
+                    //   fill: "#8F9BB3",
+                    //   borderWidth: 3,
+                    // }}
+                  />
+                  <Text style={styles.coments}>{item.length}</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.interactionBtn}
-                onPress={() =>
-                  navigation.navigate("Карта", { location: item.location })
-                }
-                activeOpacity="0.8"
-              >
-                <Feather name="map-pin" size={24} color="#BDBDBD" />
-                <Text style={styles.location}>{item.locationUser}</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.interactionBtn}
+                  onPress={() =>
+                    navigation.navigate("Карта", { location: item.location })
+                  }
+                  activeOpacity="0.8"
+                >
+                  <Feather name="map-pin" size={24} color="#BDBDBD" />
+                  <Text style={styles.location}>{item.locationUser}</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        )}
+          );
+        }}
       />
     </View>
   );
