@@ -20,16 +20,19 @@ import {
 } from "react-native";
 import { useSelector } from "react-redux";
 import { AntDesign } from "@expo/vector-icons";
+import { getDownloadURL, getStorage, ref } from "firebase/storage";
+import { async } from "@firebase/util";
 
 const CommentsScreen = ({ navigation, route }) => {
   const [coment, setComent] = useState("");
   const [data, setData] = useState([]);
-  const { uid, userName } = useSelector((state) => state.auth);
+  const { uid, userName, photoURL } = useSelector((state) => state.auth);
   const item = route.params.item;
 
+  const UserImg = [];
   useEffect(() => {
     getPosts();
-  }, []);
+  }, [getPosts]);
 
   const getPosts = async () => {
     try {
@@ -37,10 +40,15 @@ const CommentsScreen = ({ navigation, route }) => {
       await onSnapshot(
         collection(db, "posts", item.id, "comand"),
         (snapshot) => {
-          snapshot.docChanges().map((change) => {
+          snapshot.docChanges().map(async (change) => {
             console.log(change.type);
+            const photo =
+              uid == change.doc.data().uid
+                ? photoURL
+                : await getPhotoURL(change.doc.data().uid);
             const post = {
               id: change.doc.id,
+              photoURL: photo,
               ...change.doc.data(),
             };
             if (change.type === "added" && indexOfId(post.id) < 0) {
@@ -73,15 +81,34 @@ const CommentsScreen = ({ navigation, route }) => {
   const addComent = async () => {
     try {
       const db = getFirestore();
-      console.log(coment);
+      const date = Date.now().toString();
       const docRef = await addDoc(collection(db, "posts", item.id, "comand"), {
         coment,
         uid,
         userName,
+        date,
       });
       console.log("Document written with ID: ", docRef);
+      setComent("");
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const getPhotoURL = async (uid) => {
+    const storage = getStorage();
+    console.log("uid", uid);
+    try {
+      const storageRef = await ref(storage, `userLogo/${uid}`);
+      const photoURL = await getDownloadURL(storageRef);
+      console.log("photoURL", photoURL);
+      if (!photoURL) {
+        return "";
+      }
+      return photoURL;
+    } catch (error) {
+      console.log(error);
+      return "";
     }
   };
 
@@ -102,23 +129,59 @@ const CommentsScreen = ({ navigation, route }) => {
           data={data}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <View style={styles.coments}>
+            <View
+              style={
+                uid == item.uid
+                  ? { flexDirection: "row-reverse" }
+                  : { flexDirection: "row" }
+              }
+            >
               <Image
-                // source={{
-                //   uri: item.photo,
-                //   cache: "only-if-cached",
-                // }}
+                source={
+                  // () => getPhotoURL(item.uid)
+                  // uid == item.uid
+                  //   ? {
+                  //       uri: photoURL,
+                  //       cache: "only-if-cached",
+                  //     }
+                  //   : {}
+                  item.photoURL
+                    ? {
+                        uri: item.photoURL,
+                        cache: "only-if-cached",
+                      }
+                    : {}
+                }
                 // style={{ width: 60, height: 60, backgroundColor: "red" }}
-                style={styles.userImg}
+                style={
+                  uid == item.uid
+                    ? { ...styles.userImg, marginLeft: 16 }
+                    : { ...styles.userImg, marginRight: 16 }
+                }
+                // style={styles.userImg}
               />
-              <View style={styles.coment}>
+              <View
+                style={
+                  uid == item.uid
+                    ? {
+                        ...styles.coment,
+                        borderTopLeftRadius: 6,
+                        borderTopRightRadius: 0,
+                      }
+                    : {
+                        ...styles.coment,
+                        borderTopLeftRadius: 0,
+                        borderTopRightRadius: 6,
+                      }
+                }
+              >
                 <Text style={styles.comentText}>{item.coment}</Text>
                 <Text
                   style={
                     uid == item.uid ? styles.comentDataUser : styles.comentData
                   }
                 >
-                  {Date.now()}
+                  {new Date(Number(item.date)).toLocaleString()}
                 </Text>
               </View>
             </View>
@@ -167,36 +230,26 @@ const styles = StyleSheet.create({
   comentList: {
     // height: "100%",
     // minHeight: "100%",
-    height: 200,
+    height: 290,
     overflow: "scroll",
   },
+
   coments: {
     flexDirection: "row",
   },
+
   userImg: {
     width: 24,
     height: 24,
-    backgroundColor: "red",
+    backgroundColor: "#F6F6F6",
     borderRadius: 50,
-    marginRight: 16,
   },
 
   coment: {
-    width: "100%",
+    width: 299,
     padding: 16,
     marginBottom: 24,
     backgroundColor: "#F6F6F6",
-    borderTopLeftRadius: 0,
-    borderTopRightRadius: 6,
-    borderBottomLeftRadius: 6,
-    borderBottomRightRadius: 6,
-  },
-  comentUser: {
-    padding: 16,
-    marginBottom: 24,
-    backgroundColor: "#F6F6F6",
-    borderTopLeftRadius: 6,
-    borderTopRightRadius: 0,
     borderBottomLeftRadius: 6,
     borderBottomRightRadius: 6,
   },

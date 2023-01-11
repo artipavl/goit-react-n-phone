@@ -45,7 +45,7 @@ function ProfileScreen({ navigation, datas, route }) {
       if (!picked.uri) {
         return;
       }
-      dispatch(authAddPhotoURL({ image: picked.uri }));
+      dispatch(authAddPhotoURL({ image: picked.uri, uid }));
       // setImage(picked.uri);
     } catch (error) {
       console.log(error);

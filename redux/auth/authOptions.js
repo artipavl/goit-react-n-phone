@@ -12,7 +12,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   getDownloadURL,
   getStorage,
@@ -58,7 +58,7 @@ export const authSignUpUser = createAsyncThunk(
       const logoId = Date.now().toString();
 
       const storage = getStorage();
-      const storageRef = await ref(storage, `userLogo/${logoId}`);
+      const storageRef = await ref(storage, `userLogo/${user.uid}`);
       console.log("storageRef ", storageRef);
 
       const uploadBytesBd = await uploadBytes(storageRef, file);
@@ -124,16 +124,16 @@ export const authStateSignOut = createAsyncThunk(
 );
 export const authAddPhotoURL = createAsyncThunk(
   "auth/AddPhotoURL",
-  async ({ image }, thunkAPI) => {
+  async ({ image, uid }, thunkAPI) => {
     try {
       const auth = getAuth();
-     
+
       const response = await fetch(image);
       const file = await response.blob();
-      const logoId = Date.now().toString();
+      // const logoId = Date.now().toString();
 
       const storage = getStorage();
-      const storageRef = await ref(storage, `userLogo/${logoId}`);
+      const storageRef = await ref(storage, `userLogo/${uid}`);
       console.log("storageRef ", storageRef);
 
       const uploadBytesBd = await uploadBytes(storageRef, file);
@@ -146,11 +146,9 @@ export const authAddPhotoURL = createAsyncThunk(
         photoURL: logoUrl,
       });
 
-
       return {
         photoURL: logoUrl,
       };
-      
     } catch (error) {
       console.log(error);
       return thunkAPI.rejectWithValue(error.message);
