@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   userImg: {
     width: 60,
     height: 60,
-    backgroundColor: "red",
+    backgroundColor: "#F6F6F6",
     borderRadius: 16,
   },
   userName: {
