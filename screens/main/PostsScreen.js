@@ -25,8 +25,9 @@ import { useSelector } from "react-redux";
 
 const PostsScreen = ({ navigation }) => {
   const { email, userName, photoURL, uid } = useSelector((state) => state.auth);
-  const data = useContext(MyContext);
-  console.log("data", data);
+  const { posts } = useSelector((state) => state.posts);
+  const data = posts;
+
   const db = getFirestore();
 
   return (
@@ -51,6 +52,12 @@ const PostsScreen = ({ navigation }) => {
         data={data}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => {
+          let active = false;
+          item.comments.forEach((comment) => {
+            if (comment.uid === uid) {
+              active = true;
+            }
+          });
           return (
             <View style={styles.post}>
               <Image
@@ -73,16 +80,18 @@ const PostsScreen = ({ navigation }) => {
                   <Feather
                     name="message-circle"
                     size={24}
-                    color={item.active ? "#FF6C00" : "#BDBDBD"}
+                    color={active ? "#FF6C00" : "#BDBDBD"}
                     // iconStyle={{ paddingLeft: 100 }}
-                    // style={{
-                    //   // backgroundColor: "red",
-                    //   visibility: "hidden",
-                    //   fill: "#8F9BB3",
-                    //   borderWidth: 3,
-                    // }}
+                    style={
+                      {
+                        // // backgroundColor: "red",
+                        // visibility: "hidden",
+                        // fill: "#8F9BB3",
+                        // borderWidth: 3,
+                      }
+                    }
                   />
-                  <Text style={styles.coments}>{item.length}</Text>
+                  <Text style={styles.coments}>{item.comments.length}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity

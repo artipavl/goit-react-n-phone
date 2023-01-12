@@ -18,7 +18,7 @@ import ProfileScreen from "../screens/main/ProfileScreen";
 import CreatePostsScreen from "../screens/main/CreatePostsScreen";
 import Home from "../screens/main/Home";
 import { useDispatch, useSelector } from "react-redux";
-import { createContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   collection,
   doc,
@@ -33,70 +33,57 @@ import {
 import { authStateChangeUser } from "../redux/auth/authOptions";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase/config";
-
-export const MyContext = createContext("");
+import { added, snepshitComment } from "../redux/posts/postsOptions";
+import { getDownloadURL, getStorage, ref } from "firebase/storage";
+import { getPhotoURL } from "../firebase/options";
 
 export default function Main() {
-  const { uid, isLoggedIn } = useSelector((state) => state.auth);
+  const { uid, isLoggedIn, photoURL } = useSelector((state) => state.auth);
   const [data, setData] = useState([]);
-  // const [length, setLength] = useState(0);
-  // const [active, setActive] = useState(false);
+  // const [coments, setComents] = useState([]);
 
   const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   // dispatch(authStateChangeUser());
-  //   // const auth = getAuth();
-  //   onAuthStateChanged(auth, (user) => {
-  //     if (user) {
-  //       dispatch(
-  //         authStateChangeUser({
-  //           email: user.email,
-  //           name: user.displayName,
-  //           uid: user.uid,
-  //           photoURL: user.photoURL,
-  //         })
-  //       );
-  //       // return { email: user.email, name: user.phoneNumber, uid: user.uid };
-  //     }
-  //   });
-  // }, []);
-
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      dispatch(
-        authStateChangeUser({
-          email: user.email,
-          name: user.displayName,
-          uid: user.uid,
-          photoURL: user.photoURL,
-        })
-      );
-      // return { email: user.email, name: user.phoneNumber, uid: user.uid };
-    }
-  });
-
   useEffect(() => {
-    isLoggedIn && getPosts();
-  }, [isLoggedIn, getPosts]);
+    // isLoggedIn && getPosts();
+    isLoggedIn && getPostsData();
+    // dispatch(getPostsData());
+    !isLoggedIn &&
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          dispatch(
+            authStateChangeUser({
+              email: user.email,
+              name: user.displayName,
+              uid: user.uid,
+              photoURL: user.photoURL,
+            })
+          );
+          // return { email: user.email, name: user.phoneNumber, uid: user.uid };
+        }
+      });
+  }, [isLoggedIn, getPostsData]);
 
-  const getPosts = async () => {
+  const getPostsData = async () => {
     try {
       const db = getFirestore();
-      await onSnapshot(collection(db, "posts"), (snapshot) => {
-        snapshot.docChanges().map(async (change) => {
+      await onSnapshot(collection(db, "posts"), async (snapshot) => {
+        await snapshot.docChanges().map(async (change) => {
           console.log(change.type);
+          console.log("change", change);
+          // test(change.doc.id);
+          getComents(change.doc.id);
 
-          test(change.doc.id);
           const post = {
             id: change.doc.id,
             ...change.doc.data(),
             length: 0,
+            comments: [],
             active: false,
           };
-          if (change.type === "added" && indexOfId(post.id) < 0) {
-            // console.log(data);
-            setData((data) => [post, ...data]);
+          if (change.type === "added") {
+            // console.log("addPost", post);
+            dispatch(added({ post }));
           }
           if (change.type === "modified") {
             console.log("Modified city: ", change.doc.data());
@@ -106,6 +93,57 @@ export default function Main() {
           }
         });
       });
+    } catch (error) {
+      console.log(error);
+      dispatch(added(error));
+    }
+  };
+
+  const getComents = async (id) => {
+    try {
+      const db = getFirestore();
+      const querySnapshot = await getDocs(
+        collection(db, "posts", id, "comand")
+      );
+      await querySnapshot.forEach(async (doc) => {
+        console.log("doc", doc.data());
+        const photo =
+          uid == doc.data().uid ? photoURL : await getPhotoURL(doc.data().uid);
+        const comment = {
+          id: doc.id,
+          postId: id,
+          photoURL: photo,
+          ...doc.data(),
+        };
+        console.log(comment);
+        //  setData((data) => [...data, comment]);
+        dispatch(snepshitComment({ comment }));
+      });
+
+      // await onSnapshot(collection(db, "posts", id, "comand"), (snapshot) => {
+      //   snapshot.docChanges().map(async (change) => {
+      //     console.log(change.type);
+      //     const photo =
+      //       uid == change.doc.data().uid
+      //         ? photoURL
+      //         : await getPhotoURL(change.doc.data().uid);
+      //     const post = {
+      //       id: change.doc.id,
+      //       photoURL: photo,
+      //       ...change.doc.data(),
+      //     };
+      //     if (change.type === "added" && indexOfId(post.id, coments) < 0) {
+      //       // console.log("post", post);
+      //       setComents((coments) => [...coments, post]);
+      //     }
+      //     if (change.type === "modified") {
+      //       console.log("Modified city: ", change.doc.data());
+      //     }
+      //     if (change.type === "removed") {
+      //       console.log("Removed city: ", change.doc.data());
+      //     }
+      //   });
+      // });
     } catch (error) {
       console.log(error);
     }
@@ -131,7 +169,7 @@ export default function Main() {
     );
   };
 
-  const indexOfId = (id) => {
+  const indexOfId = (id, data) => {
     for (let index = 0; index < data.length; index++) {
       if (data[index].id == id) {
         return index;
@@ -139,84 +177,82 @@ export default function Main() {
     }
     return -1;
   };
-  //<MyContext.Provider value={data}></MyContext>
-  return (
-    <MyContext.Provider value={data}>
-      <NavigationContainer>
-        {isLoggedIn ? (
-          <MainTab.Navigator>
-            <MainTab.Screen
-              name="Главная"
-              component={Home}
-              options={{
-                tabBarStyle: styles.tabBar,
-                headerShown: false,
-                tabBarShowLabel: false,
-                tabBarIcon: ({ color, size }) => (
-                  <AntDesign name="appstore-o" color={color} size={size} />
-                ),
-              }}
-            />
-            <MainTab.Screen
-              name="Создать публикацию"
-              component={CreatePostsScreen}
-              options={{
-                tabBarShowLabel: false,
-                tabBarShow: false,
 
-                tabBarIcon: ({ color, size }) => (
-                  <View style={styles.buttonPlus}>
-                    <Octicons name="plus" color={color} size={size} />
-                  </View>
-                ),
-                tabBarStyle: { display: "none" },
-                headerLeft: () => {
-                  const navigation = useNavigation();
-                  return (
-                    <TouchableOpacity
-                      style={{ paddingLeft: 16 }}
-                      onPress={() => navigation.goBack()}
-                    >
-                      <Feather name="arrow-left" size={24} color="black" />
-                    </TouchableOpacity>
-                  );
-                },
-                headerTintColor: "#212121",
-                headerTitleStyle: {
-                  fontWeight: "Roboto-500",
-                },
-                headerTitleAlign: "center",
-              }}
-            />
-            <MainTab.Screen
-              name="Профиль"
-              component={ProfileScreen}
-              // initialParams={{ data }}
-              options={{
-                headerShown: false,
-                tabBarShowLabel: false,
-                tabBarIcon: ({ color, size }) => (
-                  <Feather name="user" color={color} size={size} />
-                ),
-              }}
-            />
-          </MainTab.Navigator>
-        ) : (
-          <AuthStack.Navigator>
-            <AuthStack.Screen
-              name="Register"
-              component={RegisterScreen}
-              options={{ headerShown: false }}
-            />
-            <AuthStack.Screen
-              name="Login"
-              component={LoginScreen}
-              options={{ headerShown: false }}
-            />
-          </AuthStack.Navigator>
-        )}
-      </NavigationContainer>
-    </MyContext.Provider>
+  return (
+    <NavigationContainer>
+      {isLoggedIn ? (
+        <MainTab.Navigator>
+          <MainTab.Screen
+            name="Главная"
+            component={Home}
+            options={{
+              tabBarStyle: styles.tabBar,
+              headerShown: false,
+              tabBarShowLabel: false,
+              tabBarIcon: ({ color, size }) => (
+                <AntDesign name="appstore-o" color={color} size={size} />
+              ),
+            }}
+          />
+          <MainTab.Screen
+            name="Создать публикацию"
+            component={CreatePostsScreen}
+            options={{
+              tabBarShowLabel: false,
+              tabBarShow: false,
+
+              tabBarIcon: ({ color, size }) => (
+                <View style={styles.buttonPlus}>
+                  <Octicons name="plus" color={color} size={size} />
+                </View>
+              ),
+              tabBarStyle: { display: "none" },
+              headerLeft: () => {
+                const navigation = useNavigation();
+                return (
+                  <TouchableOpacity
+                    style={{ paddingLeft: 16 }}
+                    onPress={() => navigation.goBack()}
+                  >
+                    <Feather name="arrow-left" size={24} color="black" />
+                  </TouchableOpacity>
+                );
+              },
+              headerTintColor: "#212121",
+              headerTitleStyle: {
+                fontWeight: "Roboto-500",
+              },
+              headerTitleAlign: "center",
+            }}
+          />
+          <MainTab.Screen
+            name="Профиль"
+            component={ProfileScreen}
+            // initialParams={{ data }}
+            options={{
+              headerShown: false,
+              tabBarShowLabel: false,
+              tabBarIcon: ({ color, size }) => (
+                <Feather name="user" color={color} size={size} />
+              ),
+            }}
+          />
+        </MainTab.Navigator>
+      ) : (
+        <AuthStack.Navigator>
+          <AuthStack.Screen
+            name="Register"
+            component={RegisterScreen}
+            options={{ headerShown: false }}
+          />
+          <AuthStack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+        </AuthStack.Navigator>
+      )}
+    </NavigationContainer>
   );
 }
 

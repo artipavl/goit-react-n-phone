@@ -18,10 +18,12 @@ import {
   FlatList,
   TouchableOpacity,
 } from "react-native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AntDesign } from "@expo/vector-icons";
 import { getDownloadURL, getStorage, ref } from "firebase/storage";
 import { async } from "@firebase/util";
+import { snepshitComment } from "../../redux/posts/postsOptions";
+import { getPhotoURL } from "../../firebase/options";
 
 const CommentsScreen = ({ navigation, route }) => {
   const [coment, setComent] = useState("");
@@ -29,12 +31,13 @@ const CommentsScreen = ({ navigation, route }) => {
   const { uid, userName, photoURL } = useSelector((state) => state.auth);
   const item = route.params.item;
 
-  const UserImg = [];
-  useEffect(() => {
-    getPosts();
-  }, [getPosts]);
+  const dispatch = useDispatch();
 
-  const getPosts = async () => {
+  useEffect(() => {
+    getComments();
+  }, [getComments]);
+
+  const getComments = async () => {
     try {
       const db = getFirestore();
       await onSnapshot(
@@ -46,14 +49,16 @@ const CommentsScreen = ({ navigation, route }) => {
               uid == change.doc.data().uid
                 ? photoURL
                 : await getPhotoURL(change.doc.data().uid);
-            const post = {
+            const comment = {
               id: change.doc.id,
+              postId: item.id,
               photoURL: photo,
               ...change.doc.data(),
             };
-            if (change.type === "added" && indexOfId(post.id) < 0) {
-              console.log(post);
-              setData((data) => [...data, post]);
+            if (change.type === "added" && indexOfId(comment.id) < 0) {
+              console.log(comment);
+              setData((data) => [...data, comment]);
+              dispatch(snepshitComment({ comment }));
             }
             if (change.type === "modified") {
               console.log("Modified city: ", change.doc.data());
@@ -92,23 +97,6 @@ const CommentsScreen = ({ navigation, route }) => {
       setComent("");
     } catch (error) {
       console.log(error);
-    }
-  };
-
-  const getPhotoURL = async (uid) => {
-    const storage = getStorage();
-    console.log("uid", uid);
-    try {
-      const storageRef = await ref(storage, `userLogo/${uid}`);
-      const photoURL = await getDownloadURL(storageRef);
-      console.log("photoURL", photoURL);
-      if (!photoURL) {
-        return "";
-      }
-      return photoURL;
-    } catch (error) {
-      console.log(error);
-      return "";
     }
   };
 

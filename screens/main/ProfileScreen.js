@@ -24,17 +24,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { Feather } from "@expo/vector-icons";
 import * as DocumentPicker from "expo-document-picker";
 import image from "../../assets/Images/PhotoBG.jpg";
-import { MyContext } from "../../components/Main";
 import { authAddPhotoURL, authSignInUser } from "../../redux/auth/authOptions";
-import { async } from "@firebase/util";
 
-function ProfileScreen({ navigation, datas, route }) {
-  // let data = route.params;
-  const ollData = useContext(MyContext);
+function ProfileScreen({ navigation}) {
   const { uid, email, photoURL, userName } = useSelector((state) => state.auth);
 
-  const data = ollData.filter((item) => item.uid === uid);
   const dispatch = useDispatch();
+
+  const { posts } = useSelector((state) => state.posts);
+  const data = posts.filter((item) => item.uid === uid);
 
   const addImages = async () => {
     try {
@@ -93,42 +91,67 @@ function ProfileScreen({ navigation, datas, route }) {
             style={styles.list}
             data={data}
             keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <View style={styles.post}>
-                <Image
-                  source={{
-                    uri: item.photo,
-                    cache: "only-if-cached",
-                  }}
-                  // style={{ width: 400, height: 400 }}
-                  style={styles.photo}
-                />
+            renderItem={({ item }) => {
+              let active = false;
+              item.comments.forEach((comment) => {
+                if (comment.uid === uid) {
+                  active = true;
+                }
+              });
+              return (
+                <View style={styles.post}>
+                  <Image
+                    source={{
+                      uri: item.photo,
+                      cache: "only-if-cached",
+                    }}
+                    // style={{ width: 400, height: 400 }}
+                    style={styles.photo}
+                  />
 
-                <Text style={styles.nameText}>{item.name}</Text>
+                  <Text style={styles.nameText}>{item.name}</Text>
 
-                <View style={styles.interaction}>
-                  <TouchableOpacity
-                    style={styles.interactionBtn}
-                    onPress={() => navigation.navigate("Коментарии", { item })}
-                    activeOpacity="0.8"
-                  >
-                    <Feather name="message-circle" size={24} color="#BDBDBD" />
-                    <Text style={styles.coments}>0</Text>
-                  </TouchableOpacity>
+                  <View style={styles.interaction}>
+                    <TouchableOpacity
+                      style={styles.interactionBtn}
+                      onPress={() =>
+                        navigation.navigate("Коментарии", { item })
+                      }
+                      activeOpacity="0.8"
+                    >
+                      <Feather
+                        name="message-circle"
+                        size={24}
+                        color={active ? "#FF6C00" : "#BDBDBD"}
+                        // iconStyle={{ paddingLeft: 100 }}
+                        style={
+                          {
+                            // // backgroundColor: "red",
+                            // visibility: "hidden",
+                            // fill: "#8F9BB3",
+                            // borderWidth: 3,
+                          }
+                        }
+                      />
+                      <Text style={styles.coments}>{item.comments.length}</Text>
+                    </TouchableOpacity>
 
-                  <TouchableOpacity
-                    style={styles.interactionBtn}
-                    onPress={() =>
-                      navigation.navigate("Карта", { location: item.location })
-                    }
-                    activeOpacity="0.8"
-                  >
-                    <Feather name="map-pin" size={24} color="#BDBDBD" />
-                    <Text style={styles.location}>{item.locationUser}</Text>
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.interactionBtn}
+                      onPress={() =>
+                        navigation.navigate("Карта", {
+                          location: item.location,
+                        })
+                      }
+                      activeOpacity="0.8"
+                    >
+                      <Feather name="map-pin" size={24} color="#BDBDBD" />
+                      <Text style={styles.location}>{item.locationUser}</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
-            )}
+              );
+            }}
           />
         </View>
       </ImageBackground>
