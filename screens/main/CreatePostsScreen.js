@@ -11,6 +11,8 @@ import {
   SafeAreaView,
   ImageBackground,
   Image,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { FontAwesome, Feather } from "@expo/vector-icons";
 import * as Location from "expo-location";
@@ -179,52 +181,56 @@ const CreatePostsScreen = ({ navigation }) => {
             {photo ? "Редактировать фото" : "Загрузите фото"}
           </Text>
         </View>
-        <SafeAreaView style={{ marginTop: 32 }}>
-          <View>
-            <TextInput
-              style={styles.input}
-              value={name}
-              onChangeText={setName}
-              autoComplete="name"
-              placeholder="Название..."
-              placeholderTextColor="#BDBDBD"
-            />
-          </View>
-          <View style={{ position: "relative", marginTop: 16 }}>
-            <View
-              style={{
-                position: "absolute",
-                top: 13,
-                left: 0,
-                width: 24,
-                height: 24,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Feather name="map-pin" size={18} color="#BDBDBD" />
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <SafeAreaView style={{ marginTop: 32 }}>
+            <View>
+              <TextInput
+                style={styles.input}
+                value={name}
+                onChangeText={setName}
+                autoComplete="name"
+                placeholder="Название..."
+                placeholderTextColor="#BDBDBD"
+              />
             </View>
+            <View style={{ position: "relative", marginTop: 16 }}>
+              <View
+                style={{
+                  position: "absolute",
+                  top: 13,
+                  left: 0,
+                  width: 24,
+                  height: 24,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Feather name="map-pin" size={18} color="#BDBDBD" />
+              </View>
 
-            <TextInput
-              style={{
-                ...styles.input,
-                paddingLeft: 28,
-              }}
-              value={locationUser}
-              onChangeText={setLocationUser}
-              //   autoComplete=""
-              placeholder="Местность..."
-              placeholderTextColor="#BDBDBD"
-            />
-          </View>
-          <TouchableOpacity
-            style={styles.subButton}
-            onPress={onSubmit}
-            activeOpacity="0.8"
-          >
-            <Text style={styles.buttonText}>Опубликовать</Text>
-          </TouchableOpacity>
-        </SafeAreaView>
+              <TextInput
+                style={{
+                  ...styles.input,
+                  paddingLeft: 28,
+                }}
+                value={locationUser}
+                onChangeText={setLocationUser}
+                //   autoComplete=""
+                placeholder="Местность..."
+                placeholderTextColor="#BDBDBD"
+              />
+            </View>
+            <TouchableOpacity
+              style={styles.subButton}
+              onPress={onSubmit}
+              activeOpacity="0.8"
+            >
+              <Text style={styles.buttonText}>Опубликовать</Text>
+            </TouchableOpacity>
+          </SafeAreaView>
+        </KeyboardAvoidingView>
       </View>
       <TouchableOpacity style={styles.trashButton} onPress={resetForm}>
         <Feather name="trash-2" size={24} color="#BDBDBD" />
