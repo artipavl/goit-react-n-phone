@@ -24,9 +24,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { Feather } from "@expo/vector-icons";
 import * as DocumentPicker from "expo-document-picker";
 import image from "../../assets/Images/PhotoBG.jpg";
-import { authAddPhotoURL, authSignInUser } from "../../redux/auth/authOptions";
+import {
+  authAddPhotoURL,
+  authSignInUser,
+  authStateSignOut,
+} from "../../redux/auth/authOptions";
 
-function ProfileScreen({ navigation}) {
+function ProfileScreen({ navigation }) {
   const { uid, email, photoURL, userName } = useSelector((state) => state.auth);
 
   const dispatch = useDispatch();
