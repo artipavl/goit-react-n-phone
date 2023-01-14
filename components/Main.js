@@ -138,9 +138,6 @@ export default function Main() {
             name="Главная"
             component={Home}
             options={({ route }) => {
-              console.log(route);
-              console.log(route[2]);
-              console.log(route["Symbol(CHILD_STATE)"]);
               return {
                 headerShown: false,
                 tabBarShowLabel: false,
