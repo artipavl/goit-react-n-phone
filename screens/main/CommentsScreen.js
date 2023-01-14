@@ -275,6 +275,8 @@ const styles = StyleSheet.create({
   },
   containerForm: {
     position: "relative",
+    // fles: 1,
+    marginTop: "auto",
   },
   input: {
     height: 50,
