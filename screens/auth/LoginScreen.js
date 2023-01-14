@@ -44,13 +44,13 @@ function LoginScreen({ navigation }) {
     <View style={styles.container}>
       <ImageBackground source={image} resizeMode="cover" style={styles.image}>
         <TouchableWithoutFeedback onPress={onCloseKeyboard}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-          >
-            <SafeAreaView style={styles.form}>
-              <View style={styles.formTitle}>
-                <Text style={styles.formTitleText}>Войти</Text>
-              </View>
+          <SafeAreaView style={styles.form}>
+            <View style={styles.formTitle}>
+              <Text style={styles.formTitleText}>Войти</Text>
+            </View>
+            <KeyboardAvoidingView
+              behavior={Platform.OS === "ios" ? "padding" : "height"}
+            >
               <View>
                 <View>
                   <TextInput
@@ -74,25 +74,24 @@ function LoginScreen({ navigation }) {
                   />
                 </View>
               </View>
-
-              <TouchableOpacity
-                style={styles.button}
-                onPress={onSubmit}
-                activeOpacity="0.8"
-              >
-                <Text style={styles.buttonText}>Войти</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.linck}
-                onPress={() => navigation.navigate("Register")}
-                activeOpacity="0.8"
-              >
-                <Text style={styles.linckText}>
-                  Нет аккаунта? Зарегистрироваться
-                </Text>
-              </TouchableOpacity>
-            </SafeAreaView>
-          </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={onSubmit}
+              activeOpacity="0.8"
+            >
+              <Text style={styles.buttonText}>Войти</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.linck}
+              onPress={() => navigation.navigate("Register")}
+              activeOpacity="0.8"
+            >
+              <Text style={styles.linckText}>
+                Нет аккаунта? Зарегистрироваться
+              </Text>
+            </TouchableOpacity>
+          </SafeAreaView>
         </TouchableWithoutFeedback>
       </ImageBackground>
       <StatusBar style="auto" />
