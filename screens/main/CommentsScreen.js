@@ -56,7 +56,7 @@ const CommentsScreen = ({ navigation, route }) => {
               ...change.doc.data(),
             };
             if (change.type === "added" && indexOfId(comment.id) < 0) {
-              console.log(comment);
+              // console.log(comment);
               setData((data) => [...data, comment]);
               dispatch(snepshitComment({ comment }));
             }
@@ -100,6 +100,7 @@ const CommentsScreen = ({ navigation, route }) => {
     }
   };
 
+  const dataD = data.sort((a, b) => a.date - b.date);
   return (
     <View style={styles.container}>
       <View>
@@ -113,8 +114,11 @@ const CommentsScreen = ({ navigation, route }) => {
       </View>
       <View>
         <FlatList
+          onLayout={(e) => {
+            e.target.scrollToEnd({ animated: false });
+          }}
           style={styles.comentList}
-          data={data}
+          data={dataD}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View
