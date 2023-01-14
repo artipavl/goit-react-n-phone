@@ -15,6 +15,7 @@ import {
   Dimensions,
   TouchableOpacity,
   TouchableHighlight,
+  Alert,
 } from "react-native";
 import { useDispatch } from "react-redux";
 import image from "../../assets/Images/PhotoBG.jpg";
@@ -33,6 +34,16 @@ function LoginScreen({ navigation }) {
   const onSubmit = () => {
     console.log(email);
     console.log(password);
+    if (!email || password.length < 8) {
+      return Alert.alert("Ошибка", "Заполните все поля", [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        { text: "OK", onPress: () => console.log("OK Pressed") },
+      ]);
+    }
 
     Keyboard.dismiss();
     dispatch(authSignInUser({ password, email }));
