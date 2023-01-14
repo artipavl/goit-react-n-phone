@@ -6,7 +6,7 @@ import {
   onSnapshot,
   setDoc,
 } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Image,
   Text,
@@ -17,6 +17,8 @@ import {
   SafeAreaView,
   FlatList,
   TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { AntDesign } from "@expo/vector-icons";
@@ -29,10 +31,10 @@ const CommentsScreen = ({ navigation, route }) => {
   const [coment, setComent] = useState("");
   const [data, setData] = useState([]);
   const { uid, userName, photoURL } = useSelector((state) => state.auth);
+  const flatList = useRef(null);
   const item = route.params.item;
 
   const dispatch = useDispatch();
-
   useEffect(() => {
     getComments();
   }, [getComments]);
@@ -112,12 +114,12 @@ const CommentsScreen = ({ navigation, route }) => {
           style={styles.photo}
         />
       </View>
-      <View>
+      <View style={styles.comentList}>
         <FlatList
-          onLayout={(e) => {
-            e.target.scrollToEnd({ animated: false });
+          ref={flatList}
+          onContentSizeChange={() => {
+            flatList.current.scrollToEnd();
           }}
-          style={styles.comentList}
           data={dataD}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
@@ -179,8 +181,11 @@ const CommentsScreen = ({ navigation, route }) => {
             </View>
           )}
         />
-        <SafeAreaView>
-          <View style={styles.containerForm}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <SafeAreaView style={styles.containerForm}>
+            {/* <View style={styles.containerForm}> */}
             <TextInput
               style={styles.input}
               value={coment}
@@ -195,8 +200,9 @@ const CommentsScreen = ({ navigation, route }) => {
             >
               <AntDesign name="arrowup" size={24} color="#FFFFFF" />
             </TouchableOpacity>
-          </View>
-        </SafeAreaView>
+            {/* </View> */}
+          </SafeAreaView>
+        </KeyboardAvoidingView>
       </View>
     </View>
   );
@@ -208,7 +214,7 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     paddingRight: 16,
     paddingTop: 32,
-    paddingBottom: 32,
+    paddingBottom: 16,
     overflow: "hidden",
     // minHeight: "100%",
   },
@@ -220,10 +226,11 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   comentList: {
+    flex: 1,
     // height: "100%",
     // minHeight: "100%",
-    height: 290,
-    overflow: "scroll",
+    // height: 290,
+    // overflow: "scroll",
   },
 
   coments: {
