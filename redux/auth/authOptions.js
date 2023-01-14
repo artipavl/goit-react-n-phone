@@ -122,6 +122,7 @@ export const authStateSignOut = createAsyncThunk(
     }
   }
 );
+
 export const authAddPhotoURL = createAsyncThunk(
   "auth/AddPhotoURL",
   async ({ image, uid }, thunkAPI) => {

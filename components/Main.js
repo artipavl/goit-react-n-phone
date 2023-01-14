@@ -1,5 +1,9 @@
 import { Feather, AntDesign, Octicons } from "@expo/vector-icons";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  useNavigation,
+  useNavigationState,
+} from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 
@@ -39,8 +43,10 @@ import { getPhotoURL } from "../firebase/options";
 
 export default function Main() {
   const { uid, isLoggedIn, photoURL } = useSelector((state) => state.auth);
-  const [data, setData] = useState([]);
+  // const [data, setData] = useState([]);
   // const [coments, setComents] = useState([]);
+  // const navigation = useNavigation();
+  // console.log("navigation", navigation);
 
   const dispatch = useDispatch();
 
@@ -69,8 +75,8 @@ export default function Main() {
       const db = getFirestore();
       await onSnapshot(collection(db, "posts"), async (snapshot) => {
         await snapshot.docChanges().map(async (change) => {
-          console.log(change.type);
-          console.log("change", change);
+          // console.log(change.type);
+          // console.log("change", change);
           // test(change.doc.id);
           getComents(change.doc.id);
 
@@ -106,7 +112,7 @@ export default function Main() {
         collection(db, "posts", id, "comand")
       );
       await querySnapshot.forEach(async (doc) => {
-        console.log("doc", doc.data());
+        // console.log("doc", doc.data());
         const photo =
           uid == doc.data().uid ? photoURL : await getPhotoURL(doc.data().uid);
         const comment = {
@@ -115,67 +121,13 @@ export default function Main() {
           photoURL: photo,
           ...doc.data(),
         };
-        console.log(comment);
+        // console.log(comment);
         //  setData((data) => [...data, comment]);
         dispatch(snepshitComment({ comment }));
       });
-
-      // await onSnapshot(collection(db, "posts", id, "comand"), (snapshot) => {
-      //   snapshot.docChanges().map(async (change) => {
-      //     console.log(change.type);
-      //     const photo =
-      //       uid == change.doc.data().uid
-      //         ? photoURL
-      //         : await getPhotoURL(change.doc.data().uid);
-      //     const post = {
-      //       id: change.doc.id,
-      //       photoURL: photo,
-      //       ...change.doc.data(),
-      //     };
-      //     if (change.type === "added" && indexOfId(post.id, coments) < 0) {
-      //       // console.log("post", post);
-      //       setComents((coments) => [...coments, post]);
-      //     }
-      //     if (change.type === "modified") {
-      //       console.log("Modified city: ", change.doc.data());
-      //     }
-      //     if (change.type === "removed") {
-      //       console.log("Removed city: ", change.doc.data());
-      //     }
-      //   });
-      // });
     } catch (error) {
       console.log(error);
     }
-  };
-
-  const test = async (id) => {
-    let length = 0;
-    let active = false;
-
-    const db = getFirestore();
-    console.log("uid", id);
-
-    const querySnapshot = await getDocs(collection(db, "posts", id, "comand"));
-
-    await querySnapshot.forEach((doc) => {
-      length++;
-      if (doc.data().uid === uid) {
-        active = true;
-      }
-    });
-    setData((data) =>
-      data.map((item) => (item.id === id ? { ...item, length, active } : item))
-    );
-  };
-
-  const indexOfId = (id, data) => {
-    for (let index = 0; index < data.length; index++) {
-      if (data[index].id == id) {
-        return index;
-      }
-    }
-    return -1;
   };
 
   return (
@@ -185,13 +137,19 @@ export default function Main() {
           <MainTab.Screen
             name="Главная"
             component={Home}
-            options={{
-              tabBarStyle: styles.tabBar,
-              headerShown: false,
-              tabBarShowLabel: false,
-              tabBarIcon: ({ color, size }) => (
-                <AntDesign name="appstore-o" color={color} size={size} />
-              ),
+            options={({ route }) => {
+              console.log(route);
+              console.log(route[2]);
+              console.log(route["Symbol(CHILD_STATE)"]);
+              return {
+                headerShown: false,
+                tabBarShowLabel: false,
+                tabBarIcon: ({ color, size }) => (
+                  <AntDesign name="appstore-o" color={color} size={size} />
+                ),
+                // tabBarStyle: route.name == "Публикации" && { display: "none" },
+                // tabBarShow: route.name == "Публикации" && false,
+              };
             }}
           />
           <MainTab.Screen

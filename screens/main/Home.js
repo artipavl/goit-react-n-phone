@@ -1,5 +1,10 @@
 import React from "react";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  useNavigation,
+  useNavigationContainerRef,
+  useNavigationState,
+} from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Feather } from "@expo/vector-icons";
 
@@ -12,15 +17,17 @@ import { useDispatch } from "react-redux";
 import { authStateSignOut } from "../../redux/auth/authOptions";
 import { TouchableOpacity } from "react-native";
 
-const Home = ({ navigation }) => {
+const Home = ({}) => {
   const dispatch = useDispatch();
-
+  // console.log("navigation", route);
   return (
     <HomeStack.Navigator>
       <HomeStack.Screen
         name="Публикации"
         component={PostsScreen}
         options={{
+          // tabBarStyle: { display: "none" },
+          // tabBarShow: false,
           headerTintColor: "#212121",
           headerTitleStyle: {
             fontWeight: "Roboto-500",
@@ -46,7 +53,7 @@ const Home = ({ navigation }) => {
           },
           headerTitleAlign: "center",
           headerLeft: () => {
-            // const navigation = useNavigation();
+            const navigation = useNavigation();
             return (
               <TouchableOpacity
                 style={{ paddingLeft: 16 }}
@@ -68,7 +75,7 @@ const Home = ({ navigation }) => {
           },
           headerTitleAlign: "center",
           headerLeft: () => {
-            // const navigation = useNavigation();
+            const navigation = useNavigation();
             return (
               <TouchableOpacity
                 style={{ paddingLeft: 16 }}

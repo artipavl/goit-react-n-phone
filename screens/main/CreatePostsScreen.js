@@ -54,6 +54,7 @@ const CreatePostsScreen = ({ navigation }) => {
         longitude: location.coords.longitude,
       };
       setLocation(coords);
+      console.log("coords", coords);
     })();
   }, []);
 
@@ -158,9 +159,10 @@ const CreatePostsScreen = ({ navigation }) => {
                   const { uri } = await cameraRef.current.takePictureAsync(
                     options
                   );
-                  await MediaLibrary.createAssetAsync(uri);
-                  console.log(uri);
-                  setPhoto(uri);
+                  const test = await MediaLibrary.createAssetAsync(uri);
+                  console.log("uri", uri);
+                  console.log("test", test);
+                  setPhoto(test.uri);
                 } catch (error) {
                   console.log(error);
                 }

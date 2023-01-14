@@ -24,7 +24,7 @@ import { collection, getFirestore, onSnapshot } from "firebase/firestore";
 
 export const added = createAsyncThunk("posts/Added", async (post, thunkAPI) => {
   try {
-    console.log(post);
+    // console.log(post);
     return post;
   } catch (error) {
     console.log(error);
@@ -35,7 +35,7 @@ export const snepshitComment = createAsyncThunk(
   "posts/SnepshitComment",
   async (comment, thunkAPI) => {
     try {
-      console.log(comment);
+      // console.log(comment);
       return comment;
     } catch (error) {
       console.log(error);
