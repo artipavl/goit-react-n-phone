@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
   },
 
   trashButton: {
-    fles: 1,
+    // fles: 1,
     marginLeft: "auto",
     marginRight: "auto",
     marginTop: "auto",
