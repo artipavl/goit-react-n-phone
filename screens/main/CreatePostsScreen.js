@@ -13,6 +13,7 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from "react-native";
 import { FontAwesome, Feather } from "@expo/vector-icons";
 import * as Location from "expo-location";
@@ -21,11 +22,12 @@ import { app, storage } from "../../firebase/config";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { useSelector } from "react-redux";
 import { collection, addDoc, getFirestore } from "firebase/firestore";
+import { async } from "@firebase/util";
 
 const CreatePostsScreen = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(() => Camera.Constants.Type.back);
-  const [photo, setPhoto] = useState(null);
+  const [photo, setPhoto] = useState("");
   const [name, setName] = useState("");
   const [locationUser, setLocationUser] = useState("");
   const [location, setLocation] = useState(null);
@@ -34,13 +36,14 @@ const CreatePostsScreen = ({ navigation }) => {
   const cameraRef = useRef();
 
   useEffect(() => {
-    (async () => {
+    cameraStatus();
+    async function cameraStatus() {
       const { status } = await Camera.requestCameraPermissionsAsync();
       await MediaLibrary.requestPermissionsAsync();
 
       setHasPermission(status === "granted");
-    })();
-  }, []);
+    }
+  }, [Camera, MediaLibrary, setHasPermission]);
 
   useEffect(() => {
     (async () => {
@@ -58,7 +61,7 @@ const CreatePostsScreen = ({ navigation }) => {
       setLocation(coords);
       console.log("coords", coords);
     })();
-  }, []);
+  }, [Location, setLocation]);
 
   if (hasPermission === null) {
     return <View />;
@@ -70,7 +73,14 @@ const CreatePostsScreen = ({ navigation }) => {
 
   const onSubmit = async (e) => {
     if (!photo || !name || !locationUser) {
-      return console.log("test");
+      return Alert.alert("Ошибка", "Заполните все поля", [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        { text: "OK", onPress: () => console.log("OK Pressed") },
+      ]);
     }
     console.log(photo, name, locationUser, location);
     try {
@@ -102,8 +112,8 @@ const CreatePostsScreen = ({ navigation }) => {
     }
   };
 
-  const resetForm = () => {
-    setPhoto(null);
+  const resetForm = async () => {
+    setPhoto("");
     setName("");
     setLocationUser("");
     console.log(photo);
@@ -161,10 +171,10 @@ const CreatePostsScreen = ({ navigation }) => {
                   const { uri } = await cameraRef.current.takePictureAsync(
                     options
                   );
-                  const test = await MediaLibrary.createAssetAsync(uri);
-                  console.log("uri", uri);
-                  console.log("test", test);
-                  setPhoto(test.uri);
+                  const photoLibrary = await MediaLibrary.createAssetAsync(uri);
+                  // console.log("uri", uri);
+                  console.log("photoLibrary", photoLibrary);
+                  setPhoto(photoLibrary.uri);
                 } catch (error) {
                   console.log(error);
                 }
