@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "myNewProject",
-    "slug": "myNewProject",
+    "name": "Your Gallery",
+    "slug": "your-gallery",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -18,13 +18,15 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.crozzo.yourgallery"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.crozzo.yourgallery"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -36,7 +38,12 @@
           "iCloudContainerEnvironment": "Production"
         }
       ]
-    ]
-
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "b0150cc3-9e45-455e-9fb8-fd0d550f9efa"
+      }
+    },
+    "owner": "crozzo"
   }
 }
