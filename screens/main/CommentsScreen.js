@@ -19,6 +19,8 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { AntDesign } from "@expo/vector-icons";
@@ -35,6 +37,7 @@ const CommentsScreen = ({ navigation, route }) => {
   const item = route.params.item;
 
   const dispatch = useDispatch();
+
   useEffect(() => {
     getComments();
   }, [getComments]);
@@ -97,114 +100,117 @@ const CommentsScreen = ({ navigation, route }) => {
       });
       console.log("Document written with ID: ", docRef);
       setComent("");
+      onCloseKeyboard();
     } catch (error) {
       console.log(error);
     }
   };
 
+  const onCloseKeyboard = () => {
+    Keyboard.dismiss();
+  };
+
   const dataD = data.sort((a, b) => a.date - b.date);
   return (
-    <View style={styles.container}>
-      <View>
-        <Image
-          source={{
-            uri: item.photo,
-            cache: "only-if-cached",
-          }}
-          style={styles.photo}
-        />
-      </View>
-      <View style={styles.comentList}>
-        <FlatList
-          ref={flatList}
-          onContentSizeChange={() => {
-            flatList.current.scrollToEnd();
-          }}
-          data={dataD}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View
-              style={
-                uid == item.uid
-                  ? { flexDirection: "row-reverse" }
-                  : { flexDirection: "row" }
-              }
-            >
-              <Image
-                source={
-                  // () => getPhotoURL(item.uid)
-                  // uid == item.uid
-                  //   ? {
-                  //       uri: photoURL,
-                  //       cache: "only-if-cached",
-                  //     }
-                  //   : {}
-                  item.photoURL
-                    ? {
-                        uri: item.photoURL,
-                        cache: "only-if-cached",
-                      }
-                    : {}
-                }
-                // style={{ width: 60, height: 60, backgroundColor: "red" }}
-                style={
-                  uid == item.uid
-                    ? { ...styles.userImg, marginLeft: 16 }
-                    : { ...styles.userImg, marginRight: 16 }
-                }
-                // style={styles.userImg}
-              />
+    <TouchableWithoutFeedback onPress={onCloseKeyboard}>
+      <View style={styles.container}>
+        <View>
+          <Image
+            source={{
+              uri: item.photo,
+              cache: "only-if-cached",
+            }}
+            style={styles.photo}
+          />
+        </View>
+        <View style={styles.comentList}>
+          <FlatList
+            ref={flatList}
+            onContentSizeChange={() => {
+              flatList.current.scrollToEnd();
+            }}
+            data={dataD}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
               <View
                 style={
                   uid == item.uid
-                    ? {
-                        ...styles.coment,
-                        borderTopLeftRadius: 6,
-                        borderTopRightRadius: 0,
-                      }
-                    : {
-                        ...styles.coment,
-                        borderTopLeftRadius: 0,
-                        borderTopRightRadius: 6,
-                      }
+                    ? { flexDirection: "row-reverse" }
+                    : { flexDirection: "row" }
                 }
               >
-                <Text style={styles.comentText}>{item.coment}</Text>
-                <Text
+                <Image
+                  source={
+                    item.photoURL
+                      ? {
+                          uri: item.photoURL,
+                          cache: "only-if-cached",
+                        }
+                      : {}
+                  }
+                  // style={{ width: 60, height: 60, backgroundColor: "red" }}
                   style={
-                    uid == item.uid ? styles.comentDataUser : styles.comentData
+                    uid == item.uid
+                      ? { ...styles.userImg, marginLeft: 16 }
+                      : { ...styles.userImg, marginRight: 16 }
+                  }
+                  // style={styles.userImg}
+                />
+                <View
+                  style={
+                    uid == item.uid
+                      ? {
+                          ...styles.coment,
+                          borderTopLeftRadius: 6,
+                          borderTopRightRadius: 0,
+                        }
+                      : {
+                          ...styles.coment,
+                          borderTopLeftRadius: 0,
+                          borderTopRightRadius: 6,
+                        }
                   }
                 >
-                  {new Date(Number(item.date)).toLocaleString()}
-                </Text>
+                  <Text style={styles.comentText}>{item.coment}</Text>
+                  <Text
+                    style={
+                      uid == item.uid
+                        ? styles.comentDataUser
+                        : styles.comentData
+                    }
+                  >
+                    {new Date(Number(item.date)).toLocaleString()}
+                  </Text>
+                </View>
               </View>
-            </View>
-          )}
-        />
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-          <SafeAreaView style={styles.containerForm}>
-            {/* <View style={styles.containerForm}> */}
-            <TextInput
-              style={styles.input}
-              value={coment}
-              onChangeText={setComent}
-              placeholder="Комментировать..."
-              placeholderTextColor="#BDBDBD"
-            />
-            <TouchableOpacity
-              style={styles.comentSubBtn}
-              onPress={addComent}
-              activeOpacity="0.8"
-            >
-              <AntDesign name="arrowup" size={24} color="#FFFFFF" />
-            </TouchableOpacity>
-            {/* </View> */}
-          </SafeAreaView>
-        </KeyboardAvoidingView>
+            )}
+          />
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+          >
+            <SafeAreaView style={styles.containerForm}>
+              {/* <View style={styles.containerForm}> */}
+              <TextInput
+                style={styles.input}
+                value={coment}
+                onChangeText={setComent}
+                placeholder="Комментировать..."
+                placeholderTextColor="#BDBDBD"
+              />
+              <TouchableOpacity
+                style={styles.comentSubBtn}
+                onPress={addComent}
+                onBlur={onCloseKeyboard}
+                activeOpacity="0.8"
+              >
+                <AntDesign name="arrowup" size={24} color="#FFFFFF" />
+              </TouchableOpacity>
+              {/* </View> */}
+            </SafeAreaView>
+          </KeyboardAvoidingView>
+        </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 

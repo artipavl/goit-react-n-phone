@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -24,8 +24,23 @@ import { authSignInUser } from "../../redux/auth/authOptions";
 function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [keyboardStatus, setKeyboardStatus] = useState("");
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setKeyboardStatus(true);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardStatus(false);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   const onCloseKeyboard = () => {
     Keyboard.dismiss();
@@ -52,9 +67,15 @@ function LoginScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <ImageBackground source={image} resizeMode="cover" style={styles.image}>
-        <TouchableWithoutFeedback onPress={onCloseKeyboard}>
+    <TouchableWithoutFeedback onPress={onCloseKeyboard}>
+      <View
+        style={
+          !keyboardStatus
+            ? styles.container
+            : { ...styles.container, marginBottom: -200 }
+        }
+      >
+        <ImageBackground source={image} resizeMode="cover" style={styles.image}>
           <SafeAreaView style={styles.form}>
             <View style={styles.formTitle}>
               <Text style={styles.formTitleText}>Войти</Text>
@@ -103,10 +124,10 @@ function LoginScreen({ navigation }) {
               </Text>
             </TouchableOpacity>
           </SafeAreaView>
-        </TouchableWithoutFeedback>
-      </ImageBackground>
-      <StatusBar style="auto" />
-    </View>
+        </ImageBackground>
+        <StatusBar style="auto" />
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 

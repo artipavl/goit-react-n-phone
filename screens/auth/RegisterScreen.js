@@ -1,7 +1,7 @@
 import { EvilIcons, AntDesign } from "@expo/vector-icons";
 
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -31,7 +31,23 @@ function RegisterScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [image, setImage] = useState(null);
+  const [keyboardStatus, setKeyboardStatus] = useState("");
+
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setKeyboardStatus(true);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardStatus(false);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   const onCloseKeyboard = () => {
     Keyboard.dismiss();
@@ -78,97 +94,106 @@ function RegisterScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <ImageBackground source={bgImage} resizeMode="cover" style={styles.image}>
-        <SafeAreaView style={styles.form}>
-          <View style={styles.userImgBox}>
-            <Image
-              source={{
-                uri: image,
-              }}
-              // style={{ width: 60, height: 60, backgroundColor: "red" }}
-              style={styles.userImg}
-            />
+    <TouchableWithoutFeedback onPress={onCloseKeyboard}>
+      <View
+        style={
+          !keyboardStatus
+            ? styles.container
+            : { ...styles.container, marginBottom: -200 }
+        }
+      >
+        <ImageBackground
+          source={bgImage}
+          resizeMode="cover"
+          style={styles.image}
+        >
+          <SafeAreaView style={styles.form}>
+            <View style={styles.userImgBox}>
+              <Image
+                source={{
+                  uri: image,
+                }}
+                // style={{ width: 60, height: 60, backgroundColor: "red" }}
+                style={styles.userImg}
+              />
+              <TouchableOpacity
+                style={
+                  image
+                    ? styles.inputLodoBtn
+                    : { ...styles.inputLodoBtn, borderColor: "#FF6C00" }
+                }
+                onPress={addImages}
+                activeOpacity="0.8"
+              >
+                {image ? (
+                  <EvilIcons name="close" size={24} color="#E8E8E8" />
+                ) : (
+                  <AntDesign name="plus" size={13} color="#FF6C00" />
+                )}
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.formTitle}>
+              <Text style={styles.formTitleText}>Регистрация</Text>
+            </View>
+            <KeyboardAvoidingView
+              behavior={Platform.OS === "ios" ? "padding" : "height"}
+            >
+              <View>
+                <View>
+                  <TextInput
+                    style={styles.input}
+                    value={name}
+                    onChangeText={setName}
+                    autoComplete="name"
+                    placeholder="Логин"
+                    placeholderTextColor="#BDBDBD"
+                  />
+                </View>
+                <View style={{ marginTop: 16 }}>
+                  <TextInput
+                    style={styles.input}
+                    value={email}
+                    onChangeText={setEmail}
+                    autoComplete="email"
+                    placeholder="Адрес электронной почты"
+                    placeholderTextColor="#BDBDBD"
+                  />
+                </View>
+                <View style={{ marginTop: 16, marginBottom: 43 }}>
+                  <TextInput
+                    style={styles.input}
+                    secureTextEntry
+                    value={password}
+                    onChangeText={setPassword}
+                    autoComplete="password"
+                    placeholder="Пароль"
+                    placeholderTextColor="#BDBDBD"
+                  />
+                </View>
+              </View>
+            </KeyboardAvoidingView>
+
             <TouchableOpacity
-              style={
-                image
-                  ? styles.inputLodoBtn
-                  : { ...styles.inputLodoBtn, borderColor: "#FF6C00" }
-              }
-              onPress={addImages}
+              style={styles.button}
+              onPress={onSubmit}
               activeOpacity="0.8"
             >
-              {image ? (
-                <EvilIcons name="close" size={24} color="#E8E8E8" />
-              ) : (
-                <AntDesign name="plus" size={13} color="#FF6C00" />
-              )}
+              <Text style={styles.buttonText}>Зарегистрироваться</Text>
             </TouchableOpacity>
-          </View>
+            <TouchableOpacity
+              style={styles.linck}
+              onPress={() => navigation.navigate("Login")}
+              activeOpacity="0.8"
+            >
+              <Text style={styles.linckText}>Уже есть аккаунт? Войти</Text>
+            </TouchableOpacity>
+          </SafeAreaView>
+        </ImageBackground>
 
-          <View style={styles.formTitle}>
-            <Text style={styles.formTitleText}>Регистрация</Text>
-          </View>
-          {/* <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            // behavior={Platform.OS === "ios" ? "padding" : "padding"}
-          >
-            <TouchableWithoutFeedback onPress={onCloseKeyboard}> */}
-          <View>
-            <View>
-              <TextInput
-                style={styles.input}
-                value={name}
-                onChangeText={setName}
-                autoComplete="name"
-                placeholder="Логин"
-                placeholderTextColor="#BDBDBD"
-              />
-            </View>
-            <View style={{ marginTop: 16 }}>
-              <TextInput
-                style={styles.input}
-                value={email}
-                onChangeText={setEmail}
-                autoComplete="email"
-                placeholder="Адрес электронной почты"
-                placeholderTextColor="#BDBDBD"
-              />
-            </View>
-            <View style={{ marginTop: 16, marginBottom: 43 }}>
-              <TextInput
-                style={styles.input}
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-                autoComplete="password"
-                placeholder="Пароль"
-                placeholderTextColor="#BDBDBD"
-              />
-            </View>
-          </View>
-          {/* </TouchableWithoutFeedback>
-          </KeyboardAvoidingView> */}
-
-          <TouchableOpacity
-            style={styles.button}
-            onPress={onSubmit}
-            activeOpacity="0.8"
-          >
-            <Text style={styles.buttonText}>Зарегистрироваться</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.linck}
-            onPress={() => navigation.navigate("Login")}
-            activeOpacity="0.8"
-          >
-            <Text style={styles.linckText}>Уже есть аккаунт? Войти</Text>
-          </TouchableOpacity>
-        </SafeAreaView>
-      </ImageBackground>
-
-      <StatusBar style="auto" />
-    </View>
+        <StatusBar style="auto" />
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 

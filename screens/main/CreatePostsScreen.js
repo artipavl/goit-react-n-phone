@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { Camera, CameraType } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import {
-  Button,
   StyleSheet,
   Text,
   View,
@@ -14,52 +13,74 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { FontAwesome, Feather } from "@expo/vector-icons";
 import * as Location from "expo-location";
-import { app, storage } from "../../firebase/config";
-// import { getDatabase, ref, set } from "firebase/database";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { useSelector } from "react-redux";
 import { collection, addDoc, getFirestore } from "firebase/firestore";
-import { async } from "@firebase/util";
 
 const CreatePostsScreen = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState(null);
-  const [type, setType] = useState(() => Camera.Constants.Type.back);
+  const [type, setType] = useState(Camera.Constants.Type.back);
   const [photo, setPhoto] = useState("");
   const [name, setName] = useState("");
   const [locationUser, setLocationUser] = useState("");
   const [location, setLocation] = useState(null);
+  const [keyboardStatus, setKeyboardStatus] = useState("");
+
   const { uid, userName } = useSelector((state) => state.auth);
 
   const cameraRef = useRef();
 
   useEffect(() => {
-    cameraStatus();
-    async function cameraStatus() {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      await MediaLibrary.requestPermissionsAsync();
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setKeyboardStatus(true);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardStatus(false);
+    });
 
-      setHasPermission(status === "granted");
-    }
-  }, [Camera, MediaLibrary, setHasPermission]);
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   useEffect(() => {
     (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        console.log("Permission to access location was denied");
+      try {
+        const { status } = await Camera.requestCameraPermissionsAsync();
+        await MediaLibrary.requestPermissionsAsync();
+
+        setHasPermission(status === "granted");
+      } catch (error) {
+        console.log(error);
       }
+    })();
+  }, [Camera, MediaLibrary, setHasPermission, photo]);
 
-      let location = await Location.getCurrentPositionAsync({});
+  useEffect(() => {
+    (async () => {
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          console.log("Permission to access location was denied");
+        }
 
-      const coords = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      };
-      setLocation(coords);
-      console.log("coords", coords);
+        let location = await Location.getCurrentPositionAsync({});
+
+        const coords = {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        };
+        setLocation(coords);
+        console.log("coords", coords);
+      } catch (error) {
+        console.log(error);
+      }
     })();
   }, [Location, setLocation]);
 
@@ -116,7 +137,6 @@ const CreatePostsScreen = ({ navigation }) => {
     setPhoto("");
     setName("");
     setLocationUser("");
-    console.log(photo);
   };
 
   const addPostData = async (post) => {
@@ -129,123 +149,140 @@ const CreatePostsScreen = ({ navigation }) => {
     }
   };
 
+  const getPoto = async () => {
+    if (cameraRef.current) {
+      try {
+        const options = {
+          quality: 0.5,
+          base64: true,
+          skipProcessing: true,
+        };
+        const { uri } = await cameraRef.current.takePictureAsync(options);
+        const photoLibrary = await MediaLibrary.createAssetAsync(uri);
+        // console.log("uri", uri);
+        console.log("photoLibrary", photoLibrary);
+        setPhoto(photoLibrary.uri);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  const onCloseKeyboard = () => {
+    Keyboard.dismiss();
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={styles.cameraContainer}>
-        <Camera style={styles.camera} type={type} ref={cameraRef}>
-          {photo && (
-            <View style={styles.cameraImageBox}>
-              <Image
-                source={{
-                  uri: photo,
-                }}
-                style={styles.cameraImage}
-              />
-            </View>
-          )}
-          <TouchableOpacity
-            style={styles.flipContainer}
-            onPress={() => {
-              setType(
-                type === Camera.Constants.Type.back
-                  ? Camera.Constants.Type.front
-                  : Camera.Constants.Type.back
-              );
-            }}
-          >
-            <Text style={{ fontSize: 18, marginBottom: 10, color: "white" }}>
-              {" "}
-              Flip{" "}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={async () => {
-              if (cameraRef.current) {
-                try {
-                  const options = {
-                    quality: 0.5,
-                    base64: true,
-                    skipProcessing: true,
-                  };
-                  const { uri } = await cameraRef.current.takePictureAsync(
-                    options
-                  );
-                  const photoLibrary = await MediaLibrary.createAssetAsync(uri);
-                  // console.log("uri", uri);
-                  console.log("photoLibrary", photoLibrary);
-                  setPhoto(photoLibrary.uri);
-                } catch (error) {
-                  console.log(error);
-                }
-              }
-            }}
-          >
-            <FontAwesome name="camera" size={24} color="#BDBDBD" />
-          </TouchableOpacity>
-        </Camera>
-      </View>
-      <View>
+    <TouchableWithoutFeedback onPress={onCloseKeyboard}>
+      <View style={styles.container}>
         <View>
-          <Text style={styles.photoInfortation}>
-            {photo ? "Редактировать фото" : "Загрузите фото"}
-          </Text>
-        </View>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-          <SafeAreaView style={{ marginTop: 32 }}>
-            <View>
-              <TextInput
-                style={styles.input}
-                value={name}
-                onChangeText={setName}
-                autoComplete="name"
-                placeholder="Название..."
-                placeholderTextColor="#BDBDBD"
-              />
-            </View>
-            <View style={{ position: "relative", marginTop: 16 }}>
-              <View
-                style={{
-                  position: "absolute",
-                  top: 13,
-                  left: 0,
-                  width: 24,
-                  height: 24,
-                  alignItems: "center",
-                  justifyContent: "center",
+          <View style={styles.cameraContainer}>
+            <Camera
+              style={styles.camera}
+              type={type}
+              ref={cameraRef}
+              ratio="1:1"
+            >
+              {photo && (
+                <View style={styles.cameraImageBox}>
+                  <Image
+                    source={{
+                      uri: photo,
+                    }}
+                    style={styles.cameraImage}
+                  />
+                </View>
+              )}
+              <TouchableOpacity
+                style={styles.flipContainer}
+                onPress={() => {
+                  setType(
+                    type === Camera.Constants.Type.back
+                      ? Camera.Constants.Type.front
+                      : Camera.Constants.Type.back
+                  );
                 }}
               >
-                <Feather name="map-pin" size={18} color="#BDBDBD" />
-              </View>
+                <Text
+                  style={{ fontSize: 18, marginBottom: 10, color: "white" }}
+                >
+                  {" "}
+                  Flip{" "}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button} onPress={getPoto}>
+                <FontAwesome name="camera" size={24} color="#BDBDBD" />
+              </TouchableOpacity>
+            </Camera>
+          </View>
 
-              <TextInput
-                style={{
-                  ...styles.input,
-                  paddingLeft: 28,
-                }}
-                value={locationUser}
-                onChangeText={setLocationUser}
-                //   autoComplete=""
-                placeholder="Местность..."
-                placeholderTextColor="#BDBDBD"
-              />
+          <View>
+            <View>
+              <Text style={styles.photoInfortation}>
+                {photo ? "Редактировать фото" : "Загрузите фото"}
+              </Text>
             </View>
-            <TouchableOpacity
-              style={styles.subButton}
-              onPress={onSubmit}
-              activeOpacity="0.8"
+
+            <KeyboardAvoidingView
+              behavior={Platform.OS === "ios" ? "padding" : "height"}
             >
-              <Text style={styles.buttonText}>Опубликовать</Text>
-            </TouchableOpacity>
-          </SafeAreaView>
-        </KeyboardAvoidingView>
+              <SafeAreaView style={{ marginTop: 32 }}>
+                <View>
+                  <TextInput
+                    style={styles.input}
+                    value={name}
+                    onChangeText={setName}
+                    autoComplete="name"
+                    placeholder="Название..."
+                    placeholderTextColor="#BDBDBD"
+                  />
+                </View>
+                <View style={{ position: "relative", marginTop: 16 }}>
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: 13,
+                      left: 0,
+                      width: 24,
+                      height: 24,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Feather name="map-pin" size={18} color="#BDBDBD" />
+                  </View>
+
+                  <TextInput
+                    style={{
+                      ...styles.input,
+                      paddingLeft: 28,
+                    }}
+                    value={locationUser}
+                    onChangeText={setLocationUser}
+                    //   autoComplete=""
+                    placeholder="Местность..."
+                    placeholderTextColor="#BDBDBD"
+                  />
+                </View>
+                <TouchableOpacity
+                  style={styles.subButton}
+                  onPress={onSubmit}
+                  activeOpacity="0.8"
+                >
+                  <Text style={styles.buttonText}>Опубликовать</Text>
+                </TouchableOpacity>
+              </SafeAreaView>
+            </KeyboardAvoidingView>
+          </View>
+        </View>
+        <TouchableOpacity
+          style={!keyboardStatus ? styles.trashButton : { display: "none" }}
+          onPress={resetForm}
+        >
+          <Feather name="trash-2" size={24} color="#BDBDBD" />
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.trashButton} onPress={resetForm}>
-        <Feather name="trash-2" size={24} color="#BDBDBD" />
-      </TouchableOpacity>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 
